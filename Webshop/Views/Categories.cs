@@ -3,6 +3,9 @@ namespace Webshop.Views;
 
 internal class Categories(string headerText) : MenuBase<Categories.MenuItems>(headerText)
 {
+    private ComputerHardware? _computerHardware;
+    private ComputerSoftware? _computerSoftware;
+    private Monitors? _monitors;
     internal enum MenuItems
     {
         ComputerHardware = 1,
@@ -28,10 +31,16 @@ internal class Categories(string headerText) : MenuBase<Categories.MenuItems>(he
         switch ((MenuItems)choice)
         {
             case MenuItems.ComputerHardware:
+                _computerHardware ??= new ComputerHardware("Datorkomponenter");
+                _computerHardware.Activate();
                 break;
             case MenuItems.ComputerSoftware:
+                _computerSoftware ??= new ComputerSoftware("Mjukvara");
+                _computerSoftware.Activate();
                 break;
             case MenuItems.Monitors:
+                _monitors ??= new Monitors("Bildskärmar");
+                _monitors.Activate();
                 break;
             case MenuItems.Basket:
                 break;
