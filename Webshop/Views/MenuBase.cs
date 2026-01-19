@@ -1,10 +1,31 @@
-﻿namespace Webshop.Views;
+﻿using Webshop.Services;
 
-internal abstract class MenuBase<TMenuItems>(string headerText) : IMenu where TMenuItems : Enum
+namespace Webshop.Views;
+
+internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
+    protected WebshopApplication App { get; } = app;
     private protected string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
     private bool _shouldExit = false;
+    private enum PersistentMenuItems
+    {
+        Exit = 'A',
+        Login = 'L',
+        Logout = 'O',
+        Basket = 'V',
+        Back = 'B',
+        Home = 'S'
+    }
+    private static Dictionary<PersistentMenuItems, string> PersistentMenuItemsLocalizedNames => new()
+    {
+        { PersistentMenuItems.Exit, "Avsluta" },
+        { PersistentMenuItems.Login, "Logga in" },
+        { PersistentMenuItems.Logout, "Logga ut" },
+        { PersistentMenuItems.Basket, "Varukorg" },
+        { PersistentMenuItems.Back, "Backa" },
+        { PersistentMenuItems.Home, "Startsidan" }
+    };
 
     public void Activate()
     {
@@ -19,11 +40,32 @@ internal abstract class MenuBase<TMenuItems>(string headerText) : IMenu where TM
     {
         _shouldExit = true;
     }
-    private void RenderMenu()
+    protected void RenderPersistentMenuItems()
+    {
+        foreach (PersistentMenuItems item in Enum.GetValues(typeof(PersistentMenuItems)))
+        {
+            if (ShouldHideMenuItem(item))
+            {
+                continue;
+            }
+
+            Console.Write($"[{(char)item}] {PersistentMenuItemsLocalizedNames[item],-15}");
+        }
+    }
+    protected virtual void RenderMenu()
     {
         Console.Clear();
 
-        Console.WriteLine(HeaderText);
+        Console.Write(HeaderText);
+        if (App.CurrentUser != null)
+        {
+            Console.WriteLine($"\t\t\t\t\tInloggad som: {App.CurrentUser.Name}\tÄr gäst: {App.CurrentUser.IsGuest}\tÄr inloggad: {App.IsLoggedIn}");
+        }
+        Console.WriteLine();
+
+        RenderPersistentMenuItems();
+
+        Console.WriteLine();
         Console.WriteLine();
 
         foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
@@ -34,19 +76,63 @@ internal abstract class MenuBase<TMenuItems>(string headerText) : IMenu where TM
         Console.WriteLine();
     }
 
+    private bool ShouldHideMenuItem(PersistentMenuItems item)
+    {
+        return item switch
+        {
+            PersistentMenuItems.Basket when this is BasketView => true,
+            PersistentMenuItems.Back when this is MainMenuView => true,
+            PersistentMenuItems.Home when this is MainMenuView => true,
+            PersistentMenuItems.Login when App.IsLoggedIn => true,
+            PersistentMenuItems.Logout when !App.IsLoggedIn => true,
+            _ => false
+        };
+    }
+
     private void ValidateUserInput()
     {
-        if (!int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out int choice))
+        char input = char.ToUpper(Console.ReadKey(true).KeyChar);
+
+        if (Enum.IsDefined(typeof(PersistentMenuItems), (int)input))
         {
-            return;
+            ExecutePersistentUserMenuChoice(input);
         }
 
-        if (!Enum.IsDefined(typeof(TMenuItems), choice))
+        else if (int.TryParse(input.ToString(), out int choice))
         {
-            return;
+            ExecuteUserMenuChoice(choice);
         }
+    }
 
-        ExecuteUserMenuChoice(choice);
+    private void ExecutePersistentUserMenuChoice(int choice)
+    {
+        switch ((PersistentMenuItems)choice)
+        {
+            case PersistentMenuItems.Exit:
+                Environment.Exit(0);
+                break;
+            case PersistentMenuItems.Login:
+                if (App.IsLoggedIn) return;
+                new LoginService(App).Login();
+                break;
+            case PersistentMenuItems.Logout:
+                if (App.IsLoggedIn == false) return;
+                new LogoutView(App).Confirmation();
+                break;
+            case PersistentMenuItems.Basket:
+                if (this is BasketView) return;
+                App.Basket.Activate();
+                break;
+            case PersistentMenuItems.Back:
+                if (this is MainMenuView) return;
+                ExitMenu();
+                break;
+            case PersistentMenuItems.Home:
+                if (this is MainMenuView) return;
+                ExitMenu();
+                App.ReturnToMainMenu();
+                break;
+        }
     }
 
     private protected abstract void ExecuteUserMenuChoice(int choice);

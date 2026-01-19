@@ -2,8 +2,9 @@
 
 namespace Webshop.Views;
 
-internal class Login(string headerText)
+internal class LoginView(string headerText, WebshopApplication app)
 {
+    protected WebshopApplication App { get; } = app;
     private string HeaderText { get; set; } = headerText;
 
     public void Activate()

@@ -1,4 +1,7 @@
-﻿namespace Webshop;
+﻿using Webshop.Models;
+using Webshop.Views;
+
+namespace Webshop;
 
 internal class Program
 {
@@ -8,8 +11,8 @@ internal class Program
 
         Console.CursorVisible = false;
 
-        Views.MainMenu mainMenu = new("Välkommen till min webshop!");
+        var webshop = new WebshopApplication();
 
-        mainMenu.Activate();
+        webshop.Run();
     }
 }

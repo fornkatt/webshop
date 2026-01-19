@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Services;
 
-internal class UserInput
+internal class UserInputService
 {
     internal static string GetUserInput(string prompt, string contextHeader)
     {

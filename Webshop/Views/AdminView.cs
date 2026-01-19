@@ -1,5 +1,6 @@
 ﻿namespace Webshop.Views;
 
-internal class Logout
+internal class AdminView
 {
+
 }
