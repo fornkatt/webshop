@@ -1,36 +1,24 @@
 ﻿namespace Webshop.Views;
 
-internal class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
+internal class CategoriesView : MenuBase<CategoriesView.MenuItems>
 {
     internal enum MenuItems { }
 
-    private List<Models.Category> _categories =
-        [
-            new Models.Category { Name = "Datorkomponenter" },
-            new Models.Category { Name = "Mjukvara" },
-            new Models.Category { Name = "Bildskärmar" },
-            new Models.Category { Name = "Datortillbehör" },
-        ];
+    private readonly List<Models.Category> _categories;
 
-    protected override void RenderMenu()
+    public CategoriesView(string headerText, WebshopApplication app) : base(headerText, app)
     {
-        Console.Clear();
+        using var db = new Models.WebshopDbContext();
+        _categories = App.DatabaseService.GetCategoriesAsync(db).GetAwaiter().GetResult();
+    }
 
-        Console.Write(HeaderText);
-        if (App.CurrentUser != null)
+    private protected override void RenderMenu()
+    {
+        base.RenderMenu();
+
+        foreach (var category in _categories)
         {
-            Console.WriteLine($"\t\t\t\t\tInloggad som: {App.CurrentUser.Name}\tÄr gäst: {App.CurrentUser.IsGuest}\tÄr inloggad: {App.IsLoggedIn}");
-        }
-        Console.WriteLine();
-
-        RenderPersistentMenuItems();
-
-        Console.WriteLine();
-        Console.WriteLine();
-
-        for (int i = 0; i < _categories.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {_categories[i].Name}");
+            Console.WriteLine($"{category.Id}. {category.Name}");
         }
 
         Console.WriteLine();
@@ -43,8 +31,12 @@ internal class CategoriesView(string headerText, WebshopApplication app) : MenuB
         if (choice >= 1 && choice <= _categories.Count)
         {
             var category = _categories[choice - 1];
-            Console.WriteLine($"Selected: {category.Name}");
-            Console.ReadKey(true);
+
+            using var db = new Models.WebshopDbContext();
+            var products = App.DatabaseService.GetProductsPerCategoryAsync(db, choice).GetAwaiter().GetResult();
+
+            var productListView = new ProductListView(category.Name, products, App);
+            productListView.Activate();
         }
     }
 }

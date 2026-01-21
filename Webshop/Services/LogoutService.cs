@@ -7,7 +7,7 @@
         {
             App.CurrentUser = new()
             {
-                Name = "guestUser" + Random.Shared.Next(0, 10000000),
+                FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
                 IsGuest = true
             };
             App.ReturnToMainMenu();

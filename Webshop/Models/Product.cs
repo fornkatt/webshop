@@ -8,8 +8,14 @@ internal class Product
     public string? DetailedDescription { get; set; }
     public int? CategoryId { get; set; }
     public Category? Category { get; set; }
-    public string? Supplier { get; set; }
+    public int SupplierId { get; set; }
+    public required Supplier Supplier { get; set; }
     public int? Stock { get; set; }
     public decimal? Price { get; set; }
     public bool IsSelectedItem { get; set; } = false;
+    public bool IsSaleItem { get; set; } = false;
+    public bool IsActive { get; set; } = true;
+    public bool IsDiscontinued { get; set; } = false;
+    public DateTime? DiscontinuedDate { get; set; }
+    public List<OrderItem>? OrderItems { get; set; }
 }

@@ -1,17 +1,67 @@
-﻿namespace Webshop.Services;
+﻿using Microsoft.IdentityModel.Tokens;
+using Webshop.Helpers;
+using Webshop.Views;
+
+namespace Webshop.Services;
 
 internal class LoginService(WebshopApplication app)
 {
     protected WebshopApplication App { get; } = app;
-    // Get admin details from database
-    private string? AdminUsername { get; }
-    private string? AdminPassword { get; }
-    // Normal user details
-    private string? Username { get; set; }
-    private string? Password { get; set; }
 
-    public void Login()
+    internal void Login()
     {
-        App.CurrentUser.IsGuest = false;
+        Console.CursorVisible = true;
+
+        using var db = new Models.WebshopDbContext();
+        List<Models.Customer> customers = App.DatabaseService.GetAllCustomers(db).GetAwaiter().GetResult();
+
+        var (adminUsername, adminPassword) = ConfigHelper.GetAdminCredentials();
+
+        while (true)
+        {
+            Console.Write("(Q för att avsluta) Ange användarnamn: ");
+
+            var username = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(username) || username.ToUpper() == "Q")
+            {
+                Console.CursorVisible = false;
+                return;
+            }
+
+            Console.Write("(Q för att avsluta) Ange lösenord: ");
+
+            var password = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(password) || password.ToUpper() == "Q")
+            {
+                Console.CursorVisible = false;
+                return;
+            }
+
+
+            // ToDo: Login as Admin
+            if (username == adminUsername && password == adminPassword)
+            {
+                Console.WriteLine("Grattis!");
+                return;
+            }
+
+            var customer = customers.FirstOrDefault(c => c.Username == username && c.Password == password);
+
+            if (customer == null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Ogiltigt användarnamn eller lösenord.");
+                Console.WriteLine();
+                Console.ReadKey(true);
+                continue;
+            }
+
+            App.CurrentUser = customer;
+
+            Console.CursorVisible = false;
+            return;
+        }
     }
 }

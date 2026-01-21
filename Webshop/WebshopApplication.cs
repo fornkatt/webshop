@@ -1,24 +1,25 @@
-﻿using Webshop.Models;
-using Webshop.Views;
+﻿using Webshop.Views;
 
 namespace Webshop;
 
 internal class WebshopApplication
 {
-    public BasketView Basket { get; }
-    public Customer CurrentUser { get; set; }
+    public Services.BasketService Basket { get; }
+    public Models.Customer CurrentUser { get; set; }
+    public Services.DatabaseServices DatabaseService { get; }
     private MainMenuView MainMenu { get; }
     public bool IsLoggedIn => !CurrentUser.IsGuest;
 
     public WebshopApplication()
     {
-        CurrentUser = new Customer
+        CurrentUser = new Models.Customer
         { 
-            Name = "guestUser" + Random.Shared.Next(0, 10000000),
+            FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
             IsGuest = true
         };
-        Basket = new BasketView("Varukorg", this);
-        MainMenu = new MainMenuView("Huvudmeny", this);
+        DatabaseService = new Services.DatabaseServices();
+        Basket = new Services.BasketService();
+        MainMenu = new MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
     }
 
     internal void Run()

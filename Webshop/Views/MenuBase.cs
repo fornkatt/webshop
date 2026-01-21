@@ -4,6 +4,7 @@ namespace Webshop.Views;
 
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
+    private LoginView? _loginView;
     protected WebshopApplication App { get; } = app;
     private protected string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
@@ -51,19 +52,18 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
 
             Console.Write($"[{(char)item}] {PersistentMenuItemsLocalizedNames[item],-15}");
         }
+        Console.WriteLine($"Inloggad som: {App.CurrentUser.FirstName, -15}");
     }
-    protected virtual void RenderMenu()
+    private protected virtual void RenderMenu()
     {
         Console.Clear();
 
-        Console.Write(HeaderText);
-        if (App.CurrentUser != null)
-        {
-            Console.WriteLine($"\t\t\t\t\tInloggad som: {App.CurrentUser.Name}\tÄr gäst: {App.CurrentUser.IsGuest}\tÄr inloggad: {App.IsLoggedIn}");
-        }
+        RenderPersistentMenuItems();
+
+        Console.WriteLine();
         Console.WriteLine();
 
-        RenderPersistentMenuItems();
+        Console.Write(HeaderText);
 
         Console.WriteLine();
         Console.WriteLine();
@@ -113,15 +113,16 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
                 break;
             case PersistentMenuItems.Login:
                 if (App.IsLoggedIn) return;
-                new LoginService(App).Login();
+                _loginView ??= new LoginView("Inloggning", App);
+                _loginView.Activate();
                 break;
             case PersistentMenuItems.Logout:
                 if (App.IsLoggedIn == false) return;
-                new LogoutView(App).Confirmation();
+                new LogoutView(App).Activate();
                 break;
             case PersistentMenuItems.Basket:
                 if (this is BasketView) return;
-                App.Basket.Activate();
+                new BasketView("Varukorg", App).Activate();
                 break;
             case PersistentMenuItems.Back:
                 if (this is MainMenuView) return;

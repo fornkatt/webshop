@@ -6,7 +6,7 @@ internal class LogoutView(WebshopApplication app)
 {
     protected WebshopApplication App { get; } = app;
 
-    public void Confirmation()
+    public void Activate()
     {
         Console.Clear();
         Console.WriteLine("""
@@ -17,7 +17,6 @@ internal class LogoutView(WebshopApplication app)
 
             """);
 
-        //if (char.ToUpper(Console.ReadKey(true).KeyChar) == 'J')
         if (Console.ReadKey().Key == ConsoleKey.J)
             new LogoutService(App).Logout();
 
