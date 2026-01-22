@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop.Models;
 
@@ -11,9 +12,11 @@ using Webshop.Models;
 namespace Webshop.Migrations
 {
     [DbContext(typeof(WebshopDbContext))]
-    partial class WebshopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121172959_Added age to customers")]
+    partial class Addedagetocustomers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +56,7 @@ namespace Webshop.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique()
-                        .HasFilter("[CustomerId] IS NOT NULL");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Addresses", "webshop");
                 });
@@ -234,7 +235,7 @@ namespace Webshop.Migrations
                     b.Property<string>("Provider")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TransactionFee")
+                    b.Property<decimal?>("TransactionFee")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -247,16 +248,14 @@ namespace Webshop.Migrations
                             Id = 1,
                             IsActive = true,
                             Name = "Kort",
-                            Provider = "Klarna",
-                            TransactionFee = 0m
+                            Provider = "Klarna"
                         },
                         new
                         {
                             Id = 2,
                             IsActive = true,
                             Name = "Swish",
-                            Provider = "Swish",
-                            TransactionFee = 0m
+                            Provider = "Swish"
                         },
                         new
                         {
@@ -407,8 +406,8 @@ namespace Webshop.Migrations
                         .HasForeignKey("CountryId");
 
                     b.HasOne("Webshop.Models.Customer", "Customer")
-                        .WithOne("Address")
-                        .HasForeignKey("Webshop.Models.Address", "CustomerId");
+                        .WithMany("Addresses")
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Country");
 
@@ -494,7 +493,7 @@ namespace Webshop.Migrations
 
             modelBuilder.Entity("Webshop.Models.Customer", b =>
                 {
-                    b.Navigation("Address");
+                    b.Navigation("Addresses");
 
                     b.Navigation("Orders");
                 });

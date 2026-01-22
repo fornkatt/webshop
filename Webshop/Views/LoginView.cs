@@ -3,15 +3,15 @@
 internal class LoginView(string headerText, WebshopApplication app)
 {
     protected WebshopApplication App { get; } = app;
-    private string HeaderText { get; set; } = headerText;
+    private string HeaderText { get; } = headerText;
 
-    internal void Activate()
+    internal async Task ActivateAsync()
     {
         Console.Clear();
         Console.WriteLine(HeaderText);
         Console.WriteLine();
 
         var loginService = new Services.LoginService(App);
-        loginService.Login();
+        await loginService.LoginAsync();
     }
 }

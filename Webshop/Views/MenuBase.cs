@@ -16,7 +16,8 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         Logout = 'O',
         Basket = 'V',
         Back = 'B',
-        Home = 'S'
+        Home = 'S',
+        Search = 'T'
     }
     private static Dictionary<PersistentMenuItems, string> PersistentMenuItemsLocalizedNames => new()
     {
@@ -25,16 +26,17 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         { PersistentMenuItems.Logout, "Logga ut" },
         { PersistentMenuItems.Basket, "Varukorg" },
         { PersistentMenuItems.Back, "Backa" },
-        { PersistentMenuItems.Home, "Startsidan" }
+        { PersistentMenuItems.Home, "Startsidan" },
+        { PersistentMenuItems.Search, "Sök" }
     };
 
-    public void Activate()
+    public async Task ActivateAsync()
     {
         _shouldExit = false;
         while (!_shouldExit) 
         {
-            RenderMenu();
-            ValidateUserInput();
+            await RenderMenuAsync();
+            await ValidateUserInputAsync();
         }
     }
     private protected void ExitMenu()
@@ -54,7 +56,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         }
         Console.WriteLine($"Inloggad som: {App.CurrentUser.FirstName, -15}");
     }
-    private protected virtual void RenderMenu()
+    private protected virtual async Task RenderMenuAsync()
     {
         Console.Clear();
 
@@ -72,9 +74,12 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         {
             Console.WriteLine($"{Convert.ToInt16(item)}. {MenuItemLocalizedNames[item]}");
         }
-
         Console.WriteLine();
+
+        await OnRenderMenuAsync();
     }
+
+    protected virtual Task OnRenderMenuAsync() => Task.CompletedTask;
 
     private bool ShouldHideMenuItem(PersistentMenuItems item)
     {
@@ -89,22 +94,22 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         };
     }
 
-    private void ValidateUserInput()
+    private async Task ValidateUserInputAsync()
     {
         char input = char.ToUpper(Console.ReadKey(true).KeyChar);
 
         if (Enum.IsDefined(typeof(PersistentMenuItems), (int)input))
         {
-            ExecutePersistentUserMenuChoice(input);
+            await ExecutePersistentUserMenuChoiceAsync(input);
         }
 
         else if (int.TryParse(input.ToString(), out int choice))
         {
-            ExecuteUserMenuChoice(choice);
+            await ExecuteUserMenuChoiceAsync(choice);
         }
     }
 
-    private void ExecutePersistentUserMenuChoice(int choice)
+    private async Task ExecutePersistentUserMenuChoiceAsync(int choice)
     {
         switch ((PersistentMenuItems)choice)
         {
@@ -114,15 +119,15 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             case PersistentMenuItems.Login:
                 if (App.IsLoggedIn) return;
                 _loginView ??= new LoginView("Inloggning", App);
-                _loginView.Activate();
+                await _loginView.ActivateAsync();
                 break;
             case PersistentMenuItems.Logout:
                 if (App.IsLoggedIn == false) return;
-                new LogoutView(App).Activate();
+                await new LogoutService(App).LogoutAsync();
                 break;
             case PersistentMenuItems.Basket:
                 if (this is BasketView) return;
-                new BasketView("Varukorg", App).Activate();
+                await new BasketView("Varukorg", App).ActivateAsync();
                 break;
             case PersistentMenuItems.Back:
                 if (this is MainMenuView) return;
@@ -131,10 +136,10 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             case PersistentMenuItems.Home:
                 if (this is MainMenuView) return;
                 ExitMenu();
-                App.ReturnToMainMenu();
+                await App.ReturnToMainMenuAsync();
                 break;
         }
     }
 
-    private protected abstract void ExecuteUserMenuChoice(int choice);
+    private protected abstract Task ExecuteUserMenuChoiceAsync(int choice);
 }

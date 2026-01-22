@@ -6,6 +6,6 @@ internal class PaymentMethod
     public string? Name { get; set; }
     public string? Provider { get; set; }
     public bool IsActive { get; set; } = true;
-    public decimal? TransactionFee { get; set; }
+    public required decimal TransactionFee { get; set; }
     public List<Order>? Orders { get; set; }
 }

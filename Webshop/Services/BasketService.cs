@@ -54,9 +54,16 @@ namespace Webshop.Services
             }
         }
 
-        internal int GetTotaltemCount() => _basketItems.Values.Sum(i => i.Quantity);
+        internal List<(Product Product, int Quantity)> GetItems()
+        {
+            return _basketItems.Values.ToList();
+        }
+
+        internal int GetTotalItemCount() => _basketItems.Values.Sum(i => i.Quantity);
 
         internal decimal GetTotal() => _basketItems.Values.Sum(i => (i.Product.Price ?? 0) * i.Quantity);
+
+        internal decimal GetTotalTax() => _basketItems.Values.Sum(i => (i.Product.Price ?? 0) * i.Quantity * 0.25m);
 
         internal void Clear() => _basketItems.Clear();
     }

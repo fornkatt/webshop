@@ -1,42 +1,37 @@
 ﻿namespace Webshop.Views;
 
-internal class CategoriesView : MenuBase<CategoriesView.MenuItems>
+internal class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
 {
     internal enum MenuItems { }
 
-    private readonly List<Models.Category> _categories;
+    private List<Models.Category> _categories = [];
 
-    public CategoriesView(string headerText, WebshopApplication app) : base(headerText, app)
+    protected override async Task OnRenderMenuAsync()
     {
-        using var db = new Models.WebshopDbContext();
-        _categories = App.DatabaseService.GetCategoriesAsync(db).GetAwaiter().GetResult();
-    }
-
-    private protected override void RenderMenu()
-    {
-        base.RenderMenu();
-
-        foreach (var category in _categories)
+        if (_categories.Count == 0)
         {
-            Console.WriteLine($"{category.Id}. {category.Name}");
+            _categories = await App.DatabaseService.GetCategoriesAsync();
         }
 
+        for (int i = 0; i < _categories.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {_categories[i].Name}");
+        }
         Console.WriteLine();
     }
 
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => [];
 
-    private protected override void ExecuteUserMenuChoice(int choice)
+    private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
         if (choice >= 1 && choice <= _categories.Count)
         {
             var category = _categories[choice - 1];
 
-            using var db = new Models.WebshopDbContext();
-            var products = App.DatabaseService.GetProductsPerCategoryAsync(db, choice).GetAwaiter().GetResult();
+            var products = await App.DatabaseService.GetProductsPerCategoryAsync(category.Id);
 
             var productListView = new ProductListView(category.Name, products, App);
-            productListView.Activate();
+            await productListView.ActivateAsync();
         }
     }
 }

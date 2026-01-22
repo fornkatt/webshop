@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop.Models;
 
@@ -11,9 +12,11 @@ using Webshop.Models;
 namespace Webshop.Migrations
 {
     [DbContext(typeof(WebshopDbContext))]
-    partial class WebshopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121191852_Changed customer to only have one address for simplicity")]
+    partial class Changedcustomertoonlyhaveoneaddressforsimplicity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,7 +237,7 @@ namespace Webshop.Migrations
                     b.Property<string>("Provider")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TransactionFee")
+                    b.Property<decimal?>("TransactionFee")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -247,16 +250,14 @@ namespace Webshop.Migrations
                             Id = 1,
                             IsActive = true,
                             Name = "Kort",
-                            Provider = "Klarna",
-                            TransactionFee = 0m
+                            Provider = "Klarna"
                         },
                         new
                         {
                             Id = 2,
                             IsActive = true,
                             Name = "Swish",
-                            Provider = "Swish",
-                            TransactionFee = 0m
+                            Provider = "Swish"
                         },
                         new
                         {

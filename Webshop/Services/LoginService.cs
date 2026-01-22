@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Webshop.Helpers;
-using Webshop.Views;
+﻿using Webshop.Helpers;
 
 namespace Webshop.Services;
 
@@ -8,12 +6,11 @@ internal class LoginService(WebshopApplication app)
 {
     protected WebshopApplication App { get; } = app;
 
-    internal void Login()
+    internal async Task LoginAsync()
     {
         Console.CursorVisible = true;
 
-        using var db = new Models.WebshopDbContext();
-        List<Models.Customer> customers = App.DatabaseService.GetAllCustomers(db).GetAwaiter().GetResult();
+        List<Models.Customer> customers = await App.DatabaseService.GetAllCustomersAsync();
 
         var (adminUsername, adminPassword) = ConfigHelper.GetAdminCredentials();
 

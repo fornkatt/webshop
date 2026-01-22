@@ -1,8 +1,4 @@
-﻿
-using System.Collections.Immutable;
-using System.Text;
-
-namespace Webshop.Views;
+﻿namespace Webshop.Views;
 
 internal class MainMenuView(string headerText, WebshopApplication app) : MenuBase<MainMenuView.MenuItems>(headerText, app)
 {
@@ -19,13 +15,13 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
         { MenuItems.SaleItems, "Reavaror" }
     };
 
-    private protected override void ExecuteUserMenuChoice(int choice)
+    private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
         switch ((MenuItems)choice)
         {
             case MenuItems.Categories:
                 _categories ??= new CategoriesView("Kategorier", App);
-                _categories.Activate();
+                await _categories.ActivateAsync();
                 break;
             case MenuItems.SaleItems:
                 Console.WriteLine($"Selected: Reavaror");
@@ -34,19 +30,18 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
         }
     }
 
-    private protected override void RenderMenu()
+    private protected override async Task RenderMenuAsync()
     {
-        base.RenderMenu();
+        await base.RenderMenuAsync();
 
-        ShowSelectedItems();
+        await ShowSelectedItemsAsync();
     }
 
-    private void ShowSelectedItems()
+    private async Task ShowSelectedItemsAsync()
     {
-        using var db = new Models.WebshopDbContext();
-        List<Models.Product> selectedProducts = App.DatabaseService.GetSelectedProductsAsync(db).GetAwaiter().GetResult();
+        List<Models.Product> selectedItems = await App.DatabaseService.GetSelectedProductsAsync();
 
-        foreach (var product in selectedProducts)
+        foreach (var product in selectedItems)
         {
             Console.WriteLine($"""
                 {product.Name}

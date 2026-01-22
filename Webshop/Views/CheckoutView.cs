@@ -1,0 +1,175 @@
+﻿namespace Webshop.Views;
+
+// I opted for not extending MenuBase in this view, the reasoning behind this is that while it could technically do that
+// this view is heavy on data collection, display and confirmation dialogs which block user input anyway,
+// so the user can't navigate the menu items.
+internal class CheckoutView(WebshopApplication app)
+{
+    private readonly Services.CheckoutService _checkoutService = new(app);
+    protected WebshopApplication App { get; } = app;
+
+    internal async Task ActivateAsync()
+    {
+        if (App.CurrentUser.Address != null)
+        {
+            await ShowCurrentAddressAsync();
+
+            if (!GetUserConfirmation())
+            {
+                CollectAddressInput();
+            }
+        }
+        else
+        {
+            CollectAddressInput();
+        }
+
+        var shippingMethod = await _checkoutService.GetShippingMethodAsync();
+        if (shippingMethod == null) return;
+
+        var paymentMethod = await _checkoutService.GetPaymentMethodAsync();
+        if (paymentMethod == null) return;
+
+        await RenderOrderAsync(shippingMethod, paymentMethod);
+
+        if (!GetUserConfirmation())
+        {
+            return;
+        }
+
+        if (await _checkoutService.CompleteOrder(shippingMethod, paymentMethod))
+        {
+            ShowSuccessMessage();
+        }
+        else
+        {
+            ShowErrorMessage("Kunde inte slutföra beställningen eller beställning avbruten.");
+        }
+    }
+
+    private bool GetUserConfirmation()
+    {
+        while (true)
+        {
+            var key = Console.ReadKey(true).Key;
+
+            if (key == ConsoleKey.Y)
+            {
+                return true;
+            }
+            if (key == ConsoleKey.N)
+            {
+                return false;
+            }
+        }
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        Console.Clear();
+        Console.WriteLine($"""
+            {message}
+
+            Tryck på valfri tangent för att fortsätta.
+            """);
+        Console.ReadKey(true);
+    }
+
+    private void CollectAddressInput()
+    {
+        Console.CursorVisible = true;
+
+        string contextHeader = "Ange ny address:";
+
+        var firstName = Services.UserInputService.GetUserInput("Förnamn? ", contextHeader);
+        var lastName = Services.UserInputService.GetUserInput("Efternamn? ", contextHeader);
+        var city = Services.UserInputService.GetUserInput("Stad? ", contextHeader);
+        var postalCode = Services.UserInputService.ValidateUserInputInt("Postkod? ", contextHeader);
+        var street = Services.UserInputService.GetUserInput("Gata? ", contextHeader);
+        var houseNumber = Services.UserInputService.GetUserInput("Husnummer? ", contextHeader);
+        var phone = Services.UserInputService.GetUserInput("Telefonnummer? ", contextHeader);
+        var email = Services.UserInputService.GetUserInput("Mejl? ", contextHeader);
+        using var db = new Models.WebshopDbContext();
+
+        _checkoutService.SetCustomerAddress(city, postalCode, street, houseNumber, firstName, lastName, phone, email);
+
+        Console.CursorVisible = false;
+    }
+
+    private void ShowSuccessMessage()
+    {
+        Console.Clear();
+        Console.WriteLine("""
+            Grattis till ditt köp!
+
+            Dina varor kommer skickas till dig omgående, senast nästkommande vardag.
+
+            Vi hoppas du är nöjd med din upplevelse hos oss!
+
+            Tryck på valfri tangent för att fortsätta.
+            """);
+
+        Console.ReadKey(true);
+    }
+
+    private async Task RenderOrderAsync(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
+    {
+        string countryName = await App.DatabaseService.GetCountryName(App.CurrentUser.Address!.CountryId);
+
+        Console.Clear();
+        Console.WriteLine($"""
+            Din address är:
+
+            Land: {countryName}
+            Stad: {App.CurrentUser.Address.City}
+            Postkod: {App.CurrentUser.Address.PostalCode}
+            Gata: {App.CurrentUser.Address.Street}
+            Husnummer: {App.CurrentUser.Address.HouseNumber}
+
+            Ditt valda leveransalternativ är:
+
+            {shippingMethod.Name}
+            Kostnad: {shippingMethod.Price}
+
+            Ditt valda betalsätt är:
+
+            {paymentMethod.Name}
+            Eventuell kostnad: {paymentMethod.TransactionFee}
+
+            Din order inklusive kostnad:
+            """);
+
+        App.Basket.ListBasketItems();
+
+        Console.WriteLine($"""
+            Kostnad: {App.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
+            Varav moms: {App.Basket.GetTotalTax()}
+            
+            Stämmer detta? Y/n
+            """);
+    }
+
+    private async Task ShowCurrentAddressAsync()
+    {
+        Console.Clear();
+
+        string countryName = await App.DatabaseService.GetCountryName(App.CurrentUser.Address!.CountryId);
+
+        var address = App.CurrentUser.Address;
+
+        Console.WriteLine($"""
+                Din sparade adress och kontaktuppgifter är:
+
+                Land: {countryName}
+                Stad: {address.City}
+                Postkod: {address.PostalCode}
+                Gata: {address.Street}
+                Husnummer: {address.HouseNumber}
+
+                Telefon: {App.CurrentUser.Phone}
+                Mejl: {App.CurrentUser.Email}
+
+                Stämmer detta? Y/n:
+                """);
+    }
+}

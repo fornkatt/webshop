@@ -9,7 +9,7 @@ internal class UserInputService
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"{contextHeader}");
+            Console.WriteLine(contextHeader);
             Console.WriteLine();
             Console.Write(prompt);
             input = Console.ReadLine();
@@ -23,6 +23,24 @@ internal class UserInputService
             {
                 return input;
             }
+        }
+    }
+
+    internal static int ValidateUserInputInt(string prompt, string contextHeader)
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine(contextHeader);
+            Console.WriteLine();
+            Console.Write(prompt);
+            if (!int.TryParse(Console.ReadLine(), out int validatedInput))
+            {
+                Console.WriteLine("Var god mata in ett giltigt värde. Tryck på valfri tangent för att fortsätta.");
+                Console.ReadKey(true);
+                continue;
+            }
+            return validatedInput;
         }
     }
 }

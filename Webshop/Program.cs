@@ -1,11 +1,8 @@
-﻿using Webshop.Models;
-using Webshop.Views;
-
-namespace Webshop;
+﻿namespace Webshop;
 
 internal class Program
 {
-    static void Main()
+    static async Task Main()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("sv-SE");
 
@@ -23,6 +20,6 @@ internal class Program
 
         var webshop = new WebshopApplication();
 
-        webshop.Run();
+        await webshop.RunAsync();
     }
 }

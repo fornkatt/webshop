@@ -1,16 +1,21 @@
-﻿
-namespace Webshop.Views;
+﻿namespace Webshop.Views;
 
 internal class ProductView(string headerText, Models.Product product, WebshopApplication app) : MenuBase<ProductView.MenuItems>(headerText, app)
 {
-    internal enum MenuItems { }
+    internal enum MenuItems
+    {
+        AddItem = 1
+    }
     private Models.Product Product { get; set; } = product;
 
-    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => throw new NotImplementedException();
-
-    private protected override void RenderMenu()
+    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
     {
-        base.RenderMenu();
+        { MenuItems.AddItem, "Lägg till a varukorgen." }
+    };
+
+    private protected override async Task RenderMenuAsync()
+    {
+        await base.RenderMenuAsync();
 
         Console.WriteLine($"""
             {Product.ShortDescription}
@@ -18,16 +23,14 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
             {Product.DetailedDescription}
 
             {Product.Price}
-
-            Tryck 1 för att lägga till a varukorgen.
             """);
     }
 
-    private protected override void ExecuteUserMenuChoice(int choice)
+    private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
-        switch (choice) 
+        switch ((MenuItems)choice) 
         {
-            case 1:
+            case MenuItems.AddItem:
                 App.Basket.AddToBasket(Product);
                 break;
         }

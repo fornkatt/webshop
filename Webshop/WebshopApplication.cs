@@ -13,7 +13,7 @@ internal class WebshopApplication
     public WebshopApplication()
     {
         CurrentUser = new Models.Customer
-        { 
+        {
             FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
             IsGuest = true
         };
@@ -22,13 +22,13 @@ internal class WebshopApplication
         MainMenu = new MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
     }
 
-    internal void Run()
+    internal async Task RunAsync()
     {
-        MainMenu.Activate();
+        await MainMenu.ActivateAsync();
     }
 
-    internal void ReturnToMainMenu()
+    internal async Task ReturnToMainMenuAsync()
     {
-        MainMenu.Activate();
+        await MainMenu.ActivateAsync();
     }
 }

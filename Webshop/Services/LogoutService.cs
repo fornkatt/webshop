@@ -3,14 +3,26 @@
     internal class LogoutService(WebshopApplication app)
     {
         public WebshopApplication App { get; } = app;
-        public void Logout()
+        public async Task LogoutAsync()
         {
-            App.CurrentUser = new()
+            Console.Clear();
+            Console.WriteLine("""
+            Är du säker på att du vill logga ut?
+            
+            Y/n
+
+            """);
+
+            if (Console.ReadKey().Key == ConsoleKey.Y)
             {
-                FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
-                IsGuest = true
-            };
-            App.ReturnToMainMenu();
+                App.CurrentUser = new()
+                {
+                    FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
+                    IsGuest = true
+                };
+                await App.ReturnToMainMenuAsync();
+            }
+            return; 
         }
     }
 }

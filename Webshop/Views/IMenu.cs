@@ -2,5 +2,5 @@
 
 internal interface IMenu
 {
-    void Activate();
+    Task ActivateAsync();
 }

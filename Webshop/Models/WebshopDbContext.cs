@@ -74,8 +74,8 @@ internal class WebshopDbContext : DbContext
         );
 
         modelBuilder.Entity<PaymentMethod>().HasData(
-        new PaymentMethod { Id = 1, Name = "Kort", Provider = "Klarna", IsActive = true },
-        new PaymentMethod { Id = 2, Name = "Swish", Provider = "Swish", IsActive = true },
+        new PaymentMethod { Id = 1, Name = "Kort", Provider = "Klarna", IsActive = true, TransactionFee = 0m },
+        new PaymentMethod { Id = 2, Name = "Swish", Provider = "Swish", IsActive = true, TransactionFee = 0m },
         new PaymentMethod { Id = 3, Name = "Faktura", Provider = "Klarna", IsActive = true, TransactionFee = 29m }
         );
     }
