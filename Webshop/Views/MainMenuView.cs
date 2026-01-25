@@ -2,7 +2,6 @@
 
 internal class MainMenuView(string headerText, WebshopApplication app) : MenuBase<MainMenuView.MenuItems>(headerText, app)
 {
-    private CategoriesView? _categories;
     internal enum MenuItems
     {
         Categories = 1,
@@ -20,8 +19,7 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
         switch ((MenuItems)choice)
         {
             case MenuItems.Categories:
-                _categories ??= new CategoriesView("Kategorier", App);
-                await _categories.ActivateAsync();
+                await new CategoriesView("Kategorier", App).ActivateAsync();
                 break;
             case MenuItems.SaleItems:
                 Console.WriteLine($"Selected: Reavaror");
@@ -30,10 +28,8 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
         }
     }
 
-    private protected override async Task RenderMenuAsync()
+    protected override async Task OnRenderMenuAsync()
     {
-        await base.RenderMenuAsync();
-
         await ShowSelectedItemsAsync();
     }
 

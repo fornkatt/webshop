@@ -10,40 +10,49 @@ internal class CheckoutView(WebshopApplication app)
 
     internal async Task ActivateAsync()
     {
-        if (App.CurrentUser.Address != null)
+        try
         {
-            await ShowCurrentAddressAsync();
+            Console.CursorVisible = true;
 
-            if (!GetUserConfirmation())
+            if (App.CurrentUser.Address != null)
+            {
+                await ShowCurrentAddressAsync();
+
+                if (!GetUserConfirmation())
+                {
+                    CollectAddressInput();
+                }
+            }
+            else
             {
                 CollectAddressInput();
             }
+
+            var shippingMethod = await _checkoutService.GetShippingMethodAsync();
+            if (shippingMethod == null) return;
+
+            var paymentMethod = await _checkoutService.GetPaymentMethodAsync();
+            if (paymentMethod == null) return;
+
+            await RenderOrderAsync(shippingMethod, paymentMethod);
+
+            if (!GetUserConfirmation())
+            {
+                return;
+            }
+
+            if (await _checkoutService.CompleteOrder(shippingMethod, paymentMethod))
+            {
+                ShowSuccessMessage();
+            }
+            else
+            {
+                ShowErrorMessage("Kunde inte slutföra beställningen eller beställning avbruten.");
+            }
         }
-        else
+        finally
         {
-            CollectAddressInput();
-        }
-
-        var shippingMethod = await _checkoutService.GetShippingMethodAsync();
-        if (shippingMethod == null) return;
-
-        var paymentMethod = await _checkoutService.GetPaymentMethodAsync();
-        if (paymentMethod == null) return;
-
-        await RenderOrderAsync(shippingMethod, paymentMethod);
-
-        if (!GetUserConfirmation())
-        {
-            return;
-        }
-
-        if (await _checkoutService.CompleteOrder(shippingMethod, paymentMethod))
-        {
-            ShowSuccessMessage();
-        }
-        else
-        {
-            ShowErrorMessage("Kunde inte slutföra beställningen eller beställning avbruten.");
+            Console.CursorVisible = false;
         }
     }
 
@@ -77,8 +86,6 @@ internal class CheckoutView(WebshopApplication app)
 
     private void CollectAddressInput()
     {
-        Console.CursorVisible = true;
-
         string contextHeader = "Ange ny address:";
 
         var firstName = Services.UserInputService.GetUserInput("Förnamn? ", contextHeader);
@@ -92,8 +99,6 @@ internal class CheckoutView(WebshopApplication app)
         using var db = new Models.WebshopDbContext();
 
         _checkoutService.SetCustomerAddress(city, postalCode, street, houseNumber, firstName, lastName, phone, email);
-
-        Console.CursorVisible = false;
     }
 
     private void ShowSuccessMessage()

@@ -1,45 +1,129 @@
-﻿namespace Webshop.Views;
+﻿using Webshop.Models;
+
+namespace Webshop.Views;
 
 internal class BasketView(string headerText, WebshopApplication app) : MenuBase<BasketView.MenuItems>(headerText, app)
 {
-    private CheckoutView? _checkoutView;
-    internal enum MenuItems 
-    { 
-        Clear = 1,
-        Checkout
+    private int _currentPage = 0;
+    private const int ItemsPerPage = 8;
+
+    protected override async Task OnRenderMenuAsync()
+    {
+        DisplayBasketItems();
     }
-    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
+
+    private void HandleSelectedProductAsync((Product Product, int Quantity) selectedItem)
     {
-        { MenuItems.Clear, "Töm varukorg" },
-        { MenuItems.Checkout, "Checka ut" }
-    };
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine($"""
+            {selectedItem.Product.Name}
+            {selectedItem.Quantity} st
+            Totalt pris: {selectedItem.Product.Price * selectedItem.Quantity:C}
 
-    private protected override async Task RenderMenuAsync()
+            [Y] öka antal
+            [Z] minska antal
+            [X] radera produkt
+            [S] spara
+            [Q] gå tillbaka utan att spara
+            """);
+
+            var key = Console.ReadKey(true).Key;
+            if (key == ConsoleKey.Y)
+            {
+                selectedItem.Quantity++;
+            }
+            if (key == ConsoleKey.Z)
+            {
+                if (selectedItem.Quantity <= 1) continue;
+                selectedItem.Quantity--;
+            }
+            if (key == ConsoleKey.X)
+            {
+                App.Basket.RemoveFromBasket(selectedItem.Product);
+                return;
+            }
+            if (key == ConsoleKey.S)
+            {
+                App.Basket.ReplaceBasketItem((selectedItem.Product, selectedItem.Quantity));
+                return;
+            }
+            if (key == ConsoleKey.Q)
+            {
+                return;
+            }
+        }
+    }
+
+    private void DisplayBasketItems()
     {
-        await base.RenderMenuAsync();
+        var basketItems = App.Basket.GetItems();
+        var pageItems = basketItems.Skip(_currentPage * ItemsPerPage).Take(ItemsPerPage).ToList();
 
-        App.Basket.ListBasketItems();
+        int i = 1;
 
-        Console.WriteLine();
-        Console.WriteLine();
-        Console.WriteLine($"Antal artiklar i varukorgen: {App.Basket.GetTotalItemCount()}");
-        Console.WriteLine();
-        Console.WriteLine($"Total kostnad: {App.Basket.GetTotal()}");
-        Console.WriteLine($"Varav moms: {App.Basket.GetTotalTax()}");
+        foreach (var item in pageItems)
+        {
+            var totalProductPrice = (item.Product.Price ?? 0) * item.Quantity;
+            Console.WriteLine($"""
+                {i}. {item.Product.Name} - {totalProductPrice} kr
+                    {item.Quantity} st
+
+                """);
+            i++;
+        }
+
+        Console.WriteLine($"""
+            Antal artiklar i varukorgen: {App.Basket.GetTotalItemCount()}
+            Total kostnad: {App.Basket.GetTotal()}
+            Varav moms: {App.Basket.GetTotalTax()}
+
+
+            Välj en produkt för att ändra! (Sida {_currentPage + 1}/{(basketItems.Count + ItemsPerPage - 1) / ItemsPerPage})
+            """);
     }
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
-        switch ((MenuItems)choice) 
+        var basketItems = App.Basket.GetItems();
+        var totalPages = Math.Max(1, (basketItems.Count + ItemsPerPage - 1) / ItemsPerPage);
+
+        if (choice == (int)MenuItems.NextPage)
         {
-            case MenuItems.Clear:
-                App.Basket.Clear();
-                break;
-            case MenuItems.Checkout:
-                if (App.Basket.GetTotalItemCount() <= 0) return;
-                _checkoutView ??= new CheckoutView(App);
-                await _checkoutView.ActivateAsync();
-                break;
+            if (_currentPage < totalPages - 1)
+            {
+                _currentPage++;
+            }
+            return;
+        }
+
+        if (choice == (int)MenuItems.PreviousPage)
+        {
+            if (_currentPage > 0)
+            {
+                _currentPage--;
+            }
+            return;
+        }
+
+        var pageItems = basketItems.Skip(_currentPage * ItemsPerPage).Take(ItemsPerPage).ToList();
+
+        if (choice >= 1 && choice <= pageItems.Count)
+        {
+            var selectedItem = pageItems[choice - 1];
+
+            HandleSelectedProductAsync(selectedItem);
         }
     }
+    internal enum MenuItems
+    {
+        NextPage = 0,
+        PreviousPage = 9
+    }
+    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
+    {
+        { MenuItems.NextPage, "Nästa sida"  },
+        { MenuItems.PreviousPage, "Föregående sida" }
+    };
 }

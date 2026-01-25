@@ -4,6 +4,9 @@ internal class Program
 {
     static async Task Main()
     {
+        //Services.DatabaseSeederService databaseSeederService = new();
+        //await databaseSeederService.SeedDatabaseAsync();
+
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("sv-SE");
 
         Console.CursorVisible = false;
@@ -20,6 +23,6 @@ internal class Program
 
         var webshop = new WebshopApplication();
 
-        await webshop.RunAsync();
+        await webshop.GoToMainMenuAsync();
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace Webshop.Services
+﻿namespace Webshop.Services;
+
+internal class CreateAccountService
 {
-    internal class CreateAccountService
-    {
-    }
 }

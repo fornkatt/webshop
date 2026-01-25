@@ -9,7 +9,7 @@ internal class Product
     public int? CategoryId { get; set; }
     public Category? Category { get; set; }
     public int SupplierId { get; set; }
-    public required Supplier Supplier { get; set; }
+    public Supplier? Supplier { get; set; }
     public int? Stock { get; set; }
     public decimal? Price { get; set; }
     public bool IsSelectedItem { get; set; } = false;

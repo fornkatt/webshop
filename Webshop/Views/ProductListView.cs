@@ -6,10 +6,8 @@ internal class ProductListView(string headerText, List<Models.Product> products,
     internal enum MenuItems { }
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => [];
 
-    private protected override async Task RenderMenuAsync()
+    protected override async Task OnRenderMenuAsync()
     {
-        await base.RenderMenuAsync();
-
         for (int i = 0; i < _products.Count; i++)
         {
             var product = _products[i];
@@ -18,10 +16,9 @@ internal class ProductListView(string headerText, List<Models.Product> products,
                 {product.ShortDescription}
                 {product.Price} kr
                 {(product.Stock > 0 ? "I lager" : "Slut i lager")}
-                """);
-            Console.WriteLine();
-        }
 
+                """);
+        }
         Console.WriteLine();
     }
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)

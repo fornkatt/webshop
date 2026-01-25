@@ -1,9 +1,8 @@
-﻿namespace Webshop.Models
+﻿namespace Webshop.Models;
+
+internal class Category
 {
-    internal class Category
-    {
-        public int Id { get; set; }
-        public required string Name { get; set; }
-        public List<Product>? Products { get; set; } = [];
-    }
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public List<Product>? Products { get; set; } = [];
 }

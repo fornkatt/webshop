@@ -1,10 +1,7 @@
-﻿using Webshop.Services;
-
-namespace Webshop.Views;
+﻿namespace Webshop.Views;
 
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
-    private LoginView? _loginView;
     protected WebshopApplication App { get; } = app;
     private protected string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
@@ -17,7 +14,9 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         Basket = 'V',
         Back = 'B',
         Home = 'S',
-        Search = 'T'
+        Search = 'T',
+        Checkout = 'C',
+        ClearBasket = 'X'
     }
     private static Dictionary<PersistentMenuItems, string> PersistentMenuItemsLocalizedNames => new()
     {
@@ -27,23 +26,26 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         { PersistentMenuItems.Basket, "Varukorg" },
         { PersistentMenuItems.Back, "Backa" },
         { PersistentMenuItems.Home, "Startsidan" },
-        { PersistentMenuItems.Search, "Sök" }
+        { PersistentMenuItems.Search, "Sök" },
+        { PersistentMenuItems.Checkout, "Kassan" },
+        { PersistentMenuItems.ClearBasket, "Töm varukorg" }
     };
 
-    public async Task ActivateAsync()
+    public virtual async Task ActivateAsync()
     {
         _shouldExit = false;
         while (!_shouldExit) 
         {
+            Console.Clear();
             await RenderMenuAsync();
             await ValidateUserInputAsync();
         }
     }
-    private protected void ExitMenu()
+    private void ExitMenu()
     {
         _shouldExit = true;
     }
-    protected void RenderPersistentMenuItems()
+    private async Task RenderPersistentMenuItemsAsync()
     {
         foreach (PersistentMenuItems item in Enum.GetValues(typeof(PersistentMenuItems)))
         {
@@ -58,25 +60,30 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     }
     private protected virtual async Task RenderMenuAsync()
     {
-        Console.Clear();
-
-        RenderPersistentMenuItems();
-
-        Console.WriteLine();
-        Console.WriteLine();
-
-        Console.Write(HeaderText);
-
-        Console.WriteLine();
-        Console.WriteLine();
-
-        foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
+        try
         {
-            Console.WriteLine($"{Convert.ToInt16(item)}. {MenuItemLocalizedNames[item]}");
-        }
-        Console.WriteLine();
+            Console.CursorVisible = false;
 
-        await OnRenderMenuAsync();
+            await RenderPersistentMenuItemsAsync();
+
+            Console.WriteLine($"""
+
+            {HeaderText}
+
+            """);
+
+            foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
+            {
+                Console.WriteLine($"{Convert.ToInt16(item)}. {MenuItemLocalizedNames[item]}");
+            }
+            Console.WriteLine();
+
+            await OnRenderMenuAsync();
+        }
+        finally
+        {
+            Console.CursorVisible = false;
+        }
     }
 
     protected virtual Task OnRenderMenuAsync() => Task.CompletedTask;
@@ -90,6 +97,8 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             PersistentMenuItems.Home when this is MainMenuView => true,
             PersistentMenuItems.Login when App.IsLoggedIn => true,
             PersistentMenuItems.Logout when !App.IsLoggedIn => true,
+            PersistentMenuItems.ClearBasket when this is not BasketView => true,
+            PersistentMenuItems.Checkout when this is not BasketView => true,
             _ => false
         };
     }
@@ -116,18 +125,28 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             case PersistentMenuItems.Exit:
                 Environment.Exit(0);
                 break;
+            case PersistentMenuItems.Search:
+                await new FreeSearchView(App).ActivateAsync();
+                break;
             case PersistentMenuItems.Login:
                 if (App.IsLoggedIn) return;
-                _loginView ??= new LoginView("Inloggning", App);
-                await _loginView.ActivateAsync();
+                await new LoginView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Logout:
                 if (App.IsLoggedIn == false) return;
-                await new LogoutService(App).LogoutAsync();
+                await new LogoutView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Basket:
                 if (this is BasketView) return;
-                await new BasketView("Varukorg", App).ActivateAsync();
+                await new BasketView("Varukorgen", App).ActivateAsync(); ;
+                break;
+            case PersistentMenuItems.Checkout:
+                if (this is not BasketView || App.Basket.GetTotalItemCount() <= 0) return;
+                await new CheckoutView(App).ActivateAsync();
+                break;
+            case PersistentMenuItems.ClearBasket:
+                if (this is not BasketView) return;
+                App.Basket.Clear();
                 break;
             case PersistentMenuItems.Back:
                 if (this is MainMenuView) return;
@@ -136,7 +155,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             case PersistentMenuItems.Home:
                 if (this is MainMenuView) return;
                 ExitMenu();
-                await App.ReturnToMainMenuAsync();
+                await App.GoToMainMenuAsync();
                 break;
         }
     }

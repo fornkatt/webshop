@@ -1,16 +1,14 @@
-﻿using Webshop.Views;
-
-namespace Webshop;
+﻿namespace Webshop;
 
 internal class WebshopApplication
 {
     public Services.BasketService Basket { get; }
     public Models.Customer CurrentUser { get; set; }
     public Services.DatabaseServices DatabaseService { get; }
-    private MainMenuView MainMenu { get; }
+    private Views.MainMenuView MainMenu { get; }
     public bool IsLoggedIn => !CurrentUser.IsGuest;
 
-    public WebshopApplication()
+    internal WebshopApplication()
     {
         CurrentUser = new Models.Customer
         {
@@ -19,15 +17,10 @@ internal class WebshopApplication
         };
         DatabaseService = new Services.DatabaseServices();
         Basket = new Services.BasketService();
-        MainMenu = new MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
+        MainMenu = new Views.MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
     }
 
-    internal async Task RunAsync()
-    {
-        await MainMenu.ActivateAsync();
-    }
-
-    internal async Task ReturnToMainMenuAsync()
+    internal async Task GoToMainMenuAsync()
     {
         await MainMenu.ActivateAsync();
     }

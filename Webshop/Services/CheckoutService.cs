@@ -2,7 +2,7 @@
 
 internal class CheckoutService(WebshopApplication app)
 {
-    protected WebshopApplication App = app;
+    protected WebshopApplication App { get; } = app;
 
     internal async Task<bool> CompleteOrder(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
     {
@@ -20,7 +20,6 @@ internal class CheckoutService(WebshopApplication app)
 
             if (App.CurrentUser.Address!.Id == 0)
             {
-                //App.CurrentUser.Address.Country = null;
                 db.Addresses.Add(App.CurrentUser.Address);
                 await db.SaveChangesAsync();
             }

@@ -10,13 +10,11 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
 
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
     {
-        { MenuItems.AddItem, "Lägg till a varukorgen." }
+        { MenuItems.AddItem, "Lägg till i varukorgen." }
     };
 
-    private protected override async Task RenderMenuAsync()
+    protected override async Task OnRenderMenuAsync()
     {
-        await base.RenderMenuAsync();
-
         Console.WriteLine($"""
             {Product.ShortDescription}
 
@@ -28,7 +26,7 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
-        switch ((MenuItems)choice) 
+        switch ((MenuItems)choice)
         {
             case MenuItems.AddItem:
                 App.Basket.AddToBasket(Product);
