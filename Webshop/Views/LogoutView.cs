@@ -12,17 +12,35 @@ internal class LogoutView(WebshopApplication app)
     {
         try
         {
-            Console.CursorVisible = true;
+            Console.CursorVisible = false;
 
-            Console.Clear();
-            Console.WriteLine("""
+            RenderMessage();
+
+            await GetUserConfirmation();
+        }
+        finally
+        {
+            Console.CursorVisible = false;
+        }
+    }
+
+    private void RenderMessage()
+    {
+        Console.Clear();
+        Console.WriteLine("""
         Är du säker på att du vill logga ut?
         
         Y/n
-
         """);
+    }
 
-            if (Console.ReadKey().Key == ConsoleKey.Y)
+    private async Task GetUserConfirmation()
+    {
+        while (true)
+        {
+            var key = Console.ReadKey(true).Key;
+
+            if (key == ConsoleKey.Y)
             {
                 App.CurrentUser = new()
                 {
@@ -30,12 +48,12 @@ internal class LogoutView(WebshopApplication app)
                     IsGuest = true
                 };
                 await App.GoToMainMenuAsync();
+                return;
             }
-            return;
-        }
-        finally
-        {
-            Console.CursorVisible = false;
+            if (key == ConsoleKey.N)
+            {
+                return;
+            }
         }
     }
 }

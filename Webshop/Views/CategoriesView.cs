@@ -10,7 +10,7 @@ internal class CategoriesView(string headerText, WebshopApplication app) : MenuB
     {
         if (_categories.Count == 0)
         {
-            _categories = await App.DatabaseService.GetCategoriesAsync();
+            _categories = await App.DatabaseService.GetAllCategoriesAsync();
         }
 
         for (int i = 0; i < _categories.Count; i++)

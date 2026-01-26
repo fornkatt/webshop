@@ -14,34 +14,31 @@ internal class FreeSearchView(WebshopApplication app)
         {
             Console.CursorVisible = true;
 
-            Console.Clear();
-            Console.Write("""
-            Sök efter valfri produkt med fritext. Skriv "exit" för att avsluta.
-
-            Söktext: 
-            """);
-
-            var input = GetSearchInput();
-            if (input == null) return;
-
-            var searchedItems = await App.DatabaseService.GetSearchedItems(input);
-
-            if (!HandleEmptyResults(searchedItems))
+            while (true)
             {
-                await ActivateAsync();
+                var input = GetSearchInput();
+                if (input == null) return;
+
+                var searchedItems = await App.DatabaseService.GetSearchedItems(input);
+
+                if (!HandleEmptyResults(searchedItems))
+                {
+                    continue;
+                }
+
+                DisplaySearchResults(searchedItems);
+
+                var selectedItem = GetProductSelection(searchedItems);
+
+                if (selectedItem != null)
+                {
+                    await NavigateToProduct(selectedItem);
+                }
+
                 return;
             }
-
-            DisplaySearchResults(searchedItems);
-
-            var selectedItem = GetProductSelection(searchedItems);
-
-            if (selectedItem != null)
-            {
-                await NavigateToProduct(selectedItem);
-            }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine($"Ett fel inträffade, försök igen. {e.Message}");
         }
@@ -53,25 +50,28 @@ internal class FreeSearchView(WebshopApplication app)
 
     private string? GetSearchInput()
     {
-        Console.Clear();
-        Console.Write("""
+        while (true)
+        {
+            Console.Clear();
+            Console.Write("""
             Sök efter valfri produkt med fritext. Skriv "exit" för att avsluta.
 
             Söktext: 
             """);
 
-        var input = Console.ReadLine();
+            var input = Console.ReadLine();
 
-        if (string.IsNullOrEmpty(input))
-        {
-            return GetSearchInput();
-        }
-        if (input!.Equals("EXIT", StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
+            if (string.IsNullOrEmpty(input))
+            {
+                continue;
+            }
+            if (input!.Equals("EXIT", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
 
-        return input;
+            return input;
+        }
     }
 
     private bool HandleEmptyResults(List<Models.Product> results)

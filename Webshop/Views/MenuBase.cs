@@ -1,4 +1,6 @@
-﻿namespace Webshop.Views;
+﻿using System.Text;
+
+namespace Webshop.Views;
 
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
@@ -37,6 +39,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         while (!_shouldExit) 
         {
             Console.Clear();
+            await RenderPersistentMenuItemsAsync();
             await RenderMenuAsync();
             await ValidateUserInputAsync();
         }
@@ -54,17 +57,20 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
                 continue;
             }
 
-            Console.Write($"[{(char)item}] {PersistentMenuItemsLocalizedNames[item],-15}");
+            var menuItem = $"[{(char)item}] {PersistentMenuItemsLocalizedNames[item]}";
+            Console.Write($"{menuItem, -20}");
         }
-        Console.WriteLine($"Inloggad som: {App.CurrentUser.FirstName, -15}");
+        Console.WriteLine($"""
+            
+
+            Inloggad som: {App.CurrentUser.FirstName}
+            """);
     }
     private protected virtual async Task RenderMenuAsync()
     {
         try
         {
             Console.CursorVisible = false;
-
-            await RenderPersistentMenuItemsAsync();
 
             Console.WriteLine($"""
 
@@ -92,11 +98,13 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     {
         return item switch
         {
-            PersistentMenuItems.Basket when this is BasketView => true,
+            PersistentMenuItems.Basket when this is BasketView or AdminView => true,
             PersistentMenuItems.Back when this is MainMenuView => true,
             PersistentMenuItems.Home when this is MainMenuView => true,
             PersistentMenuItems.Login when App.IsLoggedIn => true,
             PersistentMenuItems.Logout when !App.IsLoggedIn => true,
+            PersistentMenuItems.Login when this is AdminView => true,
+            PersistentMenuItems.Logout when this is AdminView => true,
             PersistentMenuItems.ClearBasket when this is not BasketView => true,
             PersistentMenuItems.Checkout when this is not BasketView => true,
             _ => false
@@ -129,15 +137,15 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
                 await new FreeSearchView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Login:
-                if (App.IsLoggedIn) return;
+                if (App.IsLoggedIn || this is AdminView) return;
                 await new LoginView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Logout:
-                if (App.IsLoggedIn == false) return;
+                if (App.IsLoggedIn == false || this is AdminView) return;
                 await new LogoutView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Basket:
-                if (this is BasketView) return;
+                if (this is BasketView || this is AdminView) return;
                 await new BasketView("Varukorgen", App).ActivateAsync(); ;
                 break;
             case PersistentMenuItems.Checkout:

@@ -45,21 +45,20 @@ internal class LoginView(WebshopApplication app)
                 }
 
 
-                // ToDo: Login as Admin
                 if (username == adminUsername && password == adminPassword)
                 {
-                    Console.WriteLine("Grattis!");
-                    Console.ReadKey();
+                    var adminApp = new AdminApplication();
+                    await adminApp.GoToAdminViewAsync();
                     return;
                 }
 
-                var customer = customers.FirstOrDefault(c => c.Username == username && c.Password == password);
+                var customer = customers.FirstOrDefault(c => c.Username == username && c.Password == password && c.IsActive == true);
 
                 if (customer == null)
                 {
                     Console.WriteLine("""
 
-                        Ogiltigt användarnamn eller lösenord.
+                        Ogiltigt användarnamn eller lösenord. Försök igen.
 
                         """);
                     Console.ReadKey(true);

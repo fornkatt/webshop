@@ -14,6 +14,7 @@ internal class Customer()
     public string? Username { get; set; }
     public string? Password { get; set; }
     public List<Order>? Orders { get; set; }
+    public bool? IsActive { get; set; }
 
     [NotMapped]
     public bool IsGuest { get; set; } = false;

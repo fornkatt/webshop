@@ -7,11 +7,87 @@ namespace Webshop.Services;
 
 internal class DatabaseServices
 {
-    // Queries med EF
-    internal async Task<List<Category>> GetCategoriesAsync()
+    // Queries with EF
+
+    // Admin-facing methods, gets unfiltered results and includes queries to delete, add, update etc
+    internal async Task ReplaceProductForAdminAsync(Product product)
+    {
+        using var db = new WebshopDbContext();
+        db.Products.Update(product);
+        db.Entry(product).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+    }
+    internal async Task<List<Product>> GetProductsPerCategoryForAdminAsync(int? categoryId)
+    {
+        using var db = new WebshopDbContext();
+        return await db.Products
+            .Where(p => p.CategoryId == categoryId)
+            .Include(p => p.Supplier)
+            .Include(p => p.Category)
+            .ToListAsync();
+    }
+    internal async Task<List<Product>> GetAllProductsForAdminAsync()
+    {
+        using var db = new WebshopDbContext();
+        return await db.Products
+            .Include(p => p.Category)
+            .Include(p => p.Supplier)
+            .OrderByDescending(p => p.IsActive)
+            .ThenBy(p => p.Name)
+            .ToListAsync();
+    }
+    internal async Task<List<Category>> GetAllCategoriesForAdminAsync()
     {
         using var db = new WebshopDbContext();
         return await db.Categories
+            .OrderByDescending(c => c.IsActive)
+            .ThenBy(c => c.Name)
+            .ToListAsync();
+    }
+    internal async Task<List<Supplier>> GetAllSuppliersForAdminAsync()
+    {
+        using var db = new WebshopDbContext();
+        return await db.Suppliers
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+    internal async Task<List<Customer>> GetAllCustomersForAdminAsync()
+    {
+        using var db = new WebshopDbContext();
+        return await db.Customers
+            .Include(c => c.Address!)
+                .ThenInclude(a => a.Country)
+            .OrderByDescending(c => c.IsActive)
+            .ThenBy(c => c.LastName)
+            .ToListAsync();
+    }
+    internal async Task DeleteProductForAdminAsync(Product product)
+    {
+        using var db = new WebshopDbContext();
+        db.Products.Remove(product);
+        db.SaveChanges();
+    }
+    internal async Task AddNewProductForAdminAsync(Product product)
+    {
+        using var db = new WebshopDbContext();
+        db.Products.Add(product);
+        db.SaveChanges();
+    }
+
+    // Customer-facing methods, gets filtered results
+    internal async Task<List<Category>> GetAllCategoriesAsync()
+    {
+        using var db = new WebshopDbContext();
+        return await db.Categories
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+    }
+
+    internal async Task<List<Supplier>> GetAllSuppliersAsync()
+    {
+        using var db = new WebshopDbContext();
+        return await db.Suppliers
             .ToListAsync();
     }
 
@@ -83,7 +159,7 @@ internal class DatabaseServices
             .FirstOrDefaultAsync() ?? "Okänd";
     }
 
-    // Queries med Dapper
+    // Queries with Dapper
     internal async Task<List<Product>> GetSearchedItems(string userInput)
     {
         string sql = """

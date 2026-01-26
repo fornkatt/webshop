@@ -96,7 +96,6 @@ internal class CheckoutView(WebshopApplication app)
         var houseNumber = Services.UserInputService.GetUserInput("Husnummer? ", contextHeader);
         var phone = Services.UserInputService.GetUserInput("Telefonnummer? ", contextHeader);
         var email = Services.UserInputService.GetUserInput("Mejl? ", contextHeader);
-        using var db = new Models.WebshopDbContext();
 
         _checkoutService.SetCustomerAddress(city, postalCode, street, houseNumber, firstName, lastName, phone, email);
     }
