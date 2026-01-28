@@ -66,17 +66,5 @@ internal class WebshopDbContext : DbContext
             .WithMany(pm => pm.Orders)
             .HasForeignKey(o => o.PaymentMethodId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ShippingMethod>().HasData(
-        new ShippingMethod { Id = 1, Name = "Standard", Description = "3-5 arbetsdagar", Price = 49m, EstimatedDaysMin = 3, EstimatedDaysMax = 5, IsActive = true },
-        new ShippingMethod { Id = 2, Name = "Express", Description = "1-2 arbetsdagar", Price = 99m, EstimatedDaysMin = 1, EstimatedDaysMax = 2, IsActive = true },
-        new ShippingMethod { Id = 3, Name = "Hämta i butik", Description = "Hämta direkt", Price = 0m, EstimatedDaysMin = 0, EstimatedDaysMax = 0, IsActive = true }
-        );
-
-        modelBuilder.Entity<PaymentMethod>().HasData(
-        new PaymentMethod { Id = 1, Name = "Kort", Provider = "Klarna", IsActive = true, TransactionFee = 0m },
-        new PaymentMethod { Id = 2, Name = "Swish", Provider = "Swish", IsActive = true, TransactionFee = 0m },
-        new PaymentMethod { Id = 3, Name = "Faktura", Provider = "Klarna", IsActive = true, TransactionFee = 29m }
-        );
     }
 }

@@ -16,7 +16,7 @@ internal class LogoutView(WebshopApplication app)
 
             RenderMessage();
 
-            await GetUserConfirmation();
+            await GetLogoutConfirmation();
         }
         finally
         {
@@ -34,7 +34,7 @@ internal class LogoutView(WebshopApplication app)
         """);
     }
 
-    private async Task GetUserConfirmation()
+    private async Task GetLogoutConfirmation()
     {
         while (true)
         {

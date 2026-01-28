@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop.Models;
 
@@ -11,9 +12,11 @@ using Webshop.Models;
 namespace Webshop.Migrations
 {
     [DbContext(typeof(WebshopDbContext))]
-    partial class WebshopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260128014750_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,6 +249,32 @@ namespace Webshop.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods", "webshop");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            Name = "Kort",
+                            Provider = "Klarna",
+                            TransactionFee = 0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsActive = true,
+                            Name = "Swish",
+                            Provider = "Swish",
+                            TransactionFee = 0m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            Name = "Faktura",
+                            Provider = "Klarna",
+                            TransactionFee = 29m
+                        });
                 });
 
             modelBuilder.Entity("Webshop.Models.Product", b =>
@@ -333,6 +362,38 @@ namespace Webshop.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ShippingMethods", "webshop");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "3-5 arbetsdagar",
+                            EstimatedDaysMax = 5,
+                            EstimatedDaysMin = 3,
+                            IsActive = true,
+                            Name = "Standard",
+                            Price = 49m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "1-2 arbetsdagar",
+                            EstimatedDaysMax = 2,
+                            EstimatedDaysMin = 1,
+                            IsActive = true,
+                            Name = "Express",
+                            Price = 99m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Hämta direkt",
+                            EstimatedDaysMax = 0,
+                            EstimatedDaysMin = 0,
+                            IsActive = true,
+                            Name = "Hämta i butik",
+                            Price = 0m
+                        });
                 });
 
             modelBuilder.Entity("Webshop.Models.Supplier", b =>

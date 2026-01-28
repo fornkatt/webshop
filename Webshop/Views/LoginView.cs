@@ -1,4 +1,6 @@
-﻿namespace Webshop.Views;
+﻿using Webshop.Helpers;
+
+namespace Webshop.Views;
 
 // Does not extend MenuBase because it makes blocking I/O calls to handle user login.
 // Displaying PersistentMenuItems and handling menu navigation is pointless here.
@@ -13,7 +15,7 @@ internal class LoginView(WebshopApplication app)
         {
             Console.CursorVisible = true;
 
-            List<Models.Customer> customers = await App.DatabaseService.GetAllCustomersAsync();
+            List<Models.Customer> customers = await App.Database.GetAllCustomersAsync();
 
             var (adminUsername, adminPassword) = Helpers.ConfigHelper.GetAdminCredentials();
 
@@ -30,16 +32,18 @@ internal class LoginView(WebshopApplication app)
 
                 var username = Console.ReadLine();
 
-                if (string.IsNullOrEmpty(username) || username.ToUpper() == "Q")
+                if (string.IsNullOrWhiteSpace(username) || username.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
                 {
                     return;
                 }
+
+                Console.WriteLine();
 
                 Console.Write("(Q för att avsluta) Ange lösenord: ");
 
                 var password = Console.ReadLine();
 
-                if (string.IsNullOrEmpty(password) || password.ToUpper() == "Q")
+                if (string.IsNullOrWhiteSpace(password) || password.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
                 {
                     return;
                 }
@@ -69,6 +73,10 @@ internal class LoginView(WebshopApplication app)
 
                 return;
             }
+        }
+        catch (Exception e)
+        {
+            MessageHelper.ShowError($"Något gick fel: { e.Message}.");
         }
         finally
         {

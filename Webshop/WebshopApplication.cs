@@ -2,9 +2,9 @@
 
 internal class WebshopApplication
 {
-    public Services.BasketService Basket { get; }
-    public Models.Customer CurrentUser { get; set; }
-    public Services.DatabaseServices DatabaseService { get; }
+    internal Services.BasketService Basket { get; }
+    internal Models.Customer CurrentUser { get; set; }
+    internal Services.DatabaseService Database { get; }
     private Views.MainMenuView MainMenu { get; }
     public bool IsLoggedIn => !CurrentUser.IsGuest;
 
@@ -15,7 +15,7 @@ internal class WebshopApplication
             FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
             IsGuest = true
         };
-        DatabaseService = new Services.DatabaseServices();
+        Database = new Services.DatabaseService();
         Basket = new Services.BasketService();
         MainMenu = new Views.MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
     }

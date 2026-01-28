@@ -23,6 +23,5 @@ internal class Product
     public List<OrderItem>? OrderItems { get; set; }
 
     [NotMapped]
-    public decimal? DiscountPercentage =>
-        OriginalPrice > 0 ? (OriginalPrice - Price) / OriginalPrice * 100 : 0;
+    public decimal? DiscountPercentage => Math.Round(100 - ((Price / OriginalPrice) * 100) ?? 0, 2);
 }

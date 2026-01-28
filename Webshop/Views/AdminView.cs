@@ -30,16 +30,13 @@ internal class AdminView(string headerText, AdminApplication adminApp) :
                 await new AdminProductsView("Hantera produkter", AdminApp).ActivateAsync();
                 break;
             case MenuItems.HandleCategories:
-                Console.WriteLine("Kategorier");
-                Console.ReadKey(true);
-                break;
-            case MenuItems.HandleCustomers:
-                Console.WriteLine("Kunder");
-                Console.ReadKey(true);
+                await new AdminCategoriesView("Hantera kategorier", AdminApp).ActivateAsync();
                 break;
             case MenuItems.HandleSuppliers:
-                Console.WriteLine("Leverantörer");
-                Console.ReadKey(true);
+                await new AdminSuppliersView("Hantera leverantörer", AdminApp).ActivateAsync();
+                break;
+            case MenuItems.HandleCustomers:
+                await new AdminCustomersView("Hantera kunder", AdminApp).ActivateAsync();
                 break;
             case MenuItems.Statistics:
                 Console.WriteLine("Statistik");

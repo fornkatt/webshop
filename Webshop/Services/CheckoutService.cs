@@ -1,4 +1,6 @@
-﻿namespace Webshop.Services;
+﻿using Webshop.Helpers;
+
+namespace Webshop.Services;
 
 internal class CheckoutService(WebshopApplication app)
 {
@@ -8,20 +10,16 @@ internal class CheckoutService(WebshopApplication app)
     {
         try
         {
-            using var db = new Models.WebshopDbContext();
-
             if (App.CurrentUser.Id == 0)
             {
-                db.Customers.Add(App.CurrentUser);
-                await db.SaveChangesAsync();
+                await App.Database.AddNewCustomerAsync(App.CurrentUser);
             }
 
             var basketItems = App.Basket.GetItems();
 
             if (App.CurrentUser.Address!.Id == 0)
             {
-                db.Addresses.Add(App.CurrentUser.Address);
-                await db.SaveChangesAsync();
+                await App.Database.AddNewAddressAsync(App.CurrentUser.Address);
             }
 
             var order = new Models.Order
@@ -58,8 +56,7 @@ internal class CheckoutService(WebshopApplication app)
                 + shippingMethod.Price 
                 + (paymentMethod.TransactionFee);
 
-            db.Orders.Add(order);
-            await db.SaveChangesAsync();
+            await App.Database.AddNewOrderAsync(order);
 
             App.Basket.Clear();
 
@@ -67,14 +64,9 @@ internal class CheckoutService(WebshopApplication app)
         }
         catch (Exception e)
         {
-            Console.Clear();
-            Console.WriteLine("Ett fel uppstod vid beställningen:");
-            Console.WriteLine(e.InnerException);
-            Console.WriteLine();
-            Console.WriteLine("Tryck på valfri tangent för att fortsätta.");
-
-            Console.ReadKey(true);
-
+            MessageHelper.ShowError($"""
+                Ett fel uppstod vid beställningen: {e.Message}
+                """);
             return false;
         }
     }
@@ -89,7 +81,7 @@ internal class CheckoutService(WebshopApplication app)
 
             for (int i = 0; i < items.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {displayFormatter(items[i])}");
+                Console.WriteLine($"Metod: {displayFormatter(items[i])}");
                 Console.WriteLine();
             }
 
@@ -109,7 +101,7 @@ internal class CheckoutService(WebshopApplication app)
 
     internal async Task<Models.PaymentMethod?> GetPaymentMethodAsync()
     {
-        var paymentMethods = await App.DatabaseService.GetPaymentMethodsAsync();
+        var paymentMethods = await App.Database.GetPaymentMethodsAsync();
 
         return SelectFromList(
             paymentMethods,
@@ -124,15 +116,15 @@ internal class CheckoutService(WebshopApplication app)
 
     internal async Task<Models.ShippingMethod?> GetShippingMethodAsync()
     {
-        var shippingMethods = await App.DatabaseService.GetShippingMethodsAsync();
+        var shippingMethods = await App.Database.GetShippingMethodsAsync();
 
         return SelectFromList(
             shippingMethods,
             "Välj fraktalternativ. Q för att avsluta.",
             sm => $"""
-                {sm.Name} - {sm.Price:C}
-                {sm.Description}
-                Leveranstid: {sm.EstimatedDaysMin}-{sm.EstimatedDaysMax} dagar
+                                {sm.Name} - {sm.Price:C}
+                                {sm.Description}
+                Leveranstid:    {sm.EstimatedDaysMin}-{sm.EstimatedDaysMax} dagar
                 """
         );
     }

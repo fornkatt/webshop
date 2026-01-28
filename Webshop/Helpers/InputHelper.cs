@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Helpers;
 
-internal static class AdminInputHelper
+internal class InputHelper
 {
     internal static string GetTextInput(string prompt)
     {
@@ -25,14 +25,14 @@ internal static class AdminInputHelper
         while (true)
         {
             Console.WriteLine();
-            Console.WriteLine($"{prompt}: ");
+            Console.Write($"{prompt}: ");
 
             var input = Console.ReadLine();
             if (int.TryParse(input, out int value))
             {
                 return value;
             }
-            ShowError("Ogiltigt värde!");
+            MessageHelper.ShowError("Ogiltigt värde!");
             continue;
         }
     }
@@ -49,7 +49,7 @@ internal static class AdminInputHelper
             {
                 return value;
             }
-            ShowError("Ogiltigt värde!");
+            MessageHelper.ShowError("Ogiltigt värde!");
             continue;
         }
     }
@@ -66,33 +66,7 @@ internal static class AdminInputHelper
             if (key == ConsoleKey.Y) return true;
             if (key == ConsoleKey.N) return false;
 
-            ShowError("Vänligen välj Y eller N!");
+            MessageHelper.ShowError("Vänligen välj Y eller N!");
         }
-    }
-
-    internal static void ShowHeader(string title)
-    {
-        Console.Clear();
-        Console.WriteLine($"=== {title.ToUpper()} ===");
-        Console.WriteLine();
-    }
-
-    internal static void ShowSuccess(string message)
-    {
-        Console.WriteLine();
-        Console.WriteLine(message);
-        Console.WriteLine();
-        Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
-        Console.ReadKey(true);
-    }
-
-    internal static void ShowError(string message)
-    {
-        Console.WriteLine($"""
-            {message}
-
-            Tryck på valfi tangent för att fortsätta.
-            """);
-        Console.ReadKey(true);
     }
 }

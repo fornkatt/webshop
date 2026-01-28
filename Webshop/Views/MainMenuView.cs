@@ -35,16 +35,19 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
 
     private async Task ShowSelectedItemsAsync()
     {
-        List<Models.Product> selectedItems = await App.DatabaseService.GetSelectedProductsAsync();
+        List<Models.Product> selectedItems = await App.Database.GetSelectedProductsAsync();
 
+        Console.WriteLine();
         foreach (var product in selectedItems)
         {
             Console.WriteLine($"""
+                {new string('─', 50)}
                 {product.Name}
-                {product.Price}
+
+                {product.OriginalPrice:C} -> {product.Price:C}!
+
                 {(product.Stock > 0 ? "I lager" : "Slut i lager")}
                 """);
-            Console.WriteLine();
         }
     }
 }

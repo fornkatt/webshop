@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Webshop.Helpers;
 
 namespace Webshop.Views;
 
@@ -72,17 +73,13 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         {
             Console.CursorVisible = false;
 
-            Console.WriteLine($"""
-
-            {HeaderText}
-
-            """);
+            Console.WriteLine();
+            MessageHelper.ShowHeader(HeaderText);
 
             foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
             {
                 Console.WriteLine($"{Convert.ToInt16(item)}. {MenuItemLocalizedNames[item]}");
             }
-            Console.WriteLine();
 
             await OnRenderMenuAsync();
         }

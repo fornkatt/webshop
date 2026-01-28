@@ -5,12 +5,77 @@ using Microsoft.Data.SqlClient;
 
 namespace Webshop.Services;
 
-internal class DatabaseServices
+internal class DatabaseService
 {
     // Queries with EF
 
     // Admin-facing methods, gets unfiltered results and includes queries to delete, add, update etc
-    internal async Task ReplaceProductForAdminAsync(Product product)
+    internal async Task UpdateCustomerForAdminAsync(Customer customer)
+    {
+        using var db = new WebshopDbContext();
+        db.Customers.Update(customer);
+        db.Entry(customer).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+    }
+    internal async Task UpdateCustomerAddressForAdminAsync(Address address)
+    {
+        using var db = new WebshopDbContext();
+        db.Addresses.Update(address);
+        db.Entry(address).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+    }
+    internal async Task<Address?> GetCustomerAddressForAdminAsync(int customerId)
+    {
+        using var db = new WebshopDbContext();
+        return await db.Addresses
+            .Where(a => a.CustomerId == customerId)
+            .FirstOrDefaultAsync();
+    }
+    internal async Task RemoveCustomerForAdminAsync(Customer customer)
+    {
+        using var db = new WebshopDbContext();
+        db.Customers.Remove(customer);
+        await db.SaveChangesAsync();
+    }
+    internal async Task RemoveSupplierForAdminAsync(Supplier supplier)
+    {
+        using var db = new WebshopDbContext();
+        db.Suppliers.Remove(supplier);
+        await db.SaveChangesAsync();
+    }
+    internal async Task UpdateSupplierForAdminAsync(Supplier supplier)
+    {
+        using var db = new WebshopDbContext();
+        db.Suppliers.Update(supplier);
+        db.Entry(supplier).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+    }
+    internal async Task AddSupplierForAdminAsync(Supplier supplier)
+    {
+        using var db = new WebshopDbContext();
+        db.Suppliers.Add(supplier);
+        await db.SaveChangesAsync();
+    }
+    internal async Task UpdateCategoryForAdminAsync(Category category)
+    {
+        using var db = new WebshopDbContext();
+        db.Categories.Update(category);
+        db.Entry(category).State = EntityState.Modified;
+        await db.SaveChangesAsync();
+    }
+    internal async Task RemoveCategoryForAdminAsync(Category category)
+    {
+        using var db = new WebshopDbContext();
+        db.Categories.Remove(category);
+        await db.SaveChangesAsync();
+    }
+    internal async Task AddCategoryForAdminAsync(Category category)
+    {
+        using var db = new WebshopDbContext();
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+    }
+    internal async Task UpdateProductForAdminAsync(Product product)
     {
         using var db = new WebshopDbContext();
         db.Products.Update(product);
@@ -61,7 +126,7 @@ internal class DatabaseServices
             .ThenBy(c => c.LastName)
             .ToListAsync();
     }
-    internal async Task DeleteProductForAdminAsync(Product product)
+    internal async Task RemoveProductForAdminAsync(Product product)
     {
         using var db = new WebshopDbContext();
         db.Products.Remove(product);
@@ -70,11 +135,29 @@ internal class DatabaseServices
     internal async Task AddNewProductForAdminAsync(Product product)
     {
         using var db = new WebshopDbContext();
-        db.Products.Add(product);
-        db.SaveChanges();
+        await db.Products.AddAsync(product);
+        await db.SaveChangesAsync();
     }
 
-    // Customer-facing methods, gets filtered results
+    // Mostly customer-facing methods, gets filtered results
+    internal async Task AddNewOrderAsync(Order order)
+    {
+        using var db = new WebshopDbContext();
+        await db.Orders.AddAsync(order);
+        await db.SaveChangesAsync();
+    }
+    internal async Task AddNewCustomerAsync(Customer customer)
+    {
+        using var db = new WebshopDbContext();
+        await db.Customers.AddAsync(customer);
+        await db.SaveChangesAsync();
+    }
+    internal async Task AddNewAddressAsync(Address address)
+    {
+        using var db = new WebshopDbContext();
+        await db.Addresses.AddAsync(address);
+        await db.SaveChangesAsync();
+    }
     internal async Task<List<Category>> GetAllCategoriesAsync()
     {
         using var db = new WebshopDbContext();
@@ -113,7 +196,7 @@ internal class DatabaseServices
     {
         using var db = new WebshopDbContext();
         return await db.Products
-            .Where(p => p.CategoryId == categoryId && !p.IsDiscontinued)
+            .Where(p => p.CategoryId == categoryId && !p.IsDiscontinued && p.IsActive)
             .Include(p => p.Supplier)
             .Include(p => p.Category)
             .ToListAsync();

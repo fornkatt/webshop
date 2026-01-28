@@ -1,4 +1,6 @@
-﻿namespace Webshop.Views;
+﻿using Webshop.Helpers;
+
+namespace Webshop.Views;
 
 // I opted for not extending MenuBase in this view, the reasoning behind this is that while it could technically do that
 // this view is heavy on data collection, display and confirmation dialogs which block user input anyway,
@@ -86,16 +88,18 @@ internal class CheckoutView(WebshopApplication app)
 
     private void CollectAddressInput()
     {
-        string contextHeader = "Ange ny address:";
+        Console.Clear();
 
-        var firstName = Services.UserInputService.GetUserInput("Förnamn? ", contextHeader);
-        var lastName = Services.UserInputService.GetUserInput("Efternamn? ", contextHeader);
-        var city = Services.UserInputService.GetUserInput("Stad? ", contextHeader);
-        var postalCode = Services.UserInputService.ValidateUserInputInt("Postkod? ", contextHeader);
-        var street = Services.UserInputService.GetUserInput("Gata? ", contextHeader);
-        var houseNumber = Services.UserInputService.GetUserInput("Husnummer? ", contextHeader);
-        var phone = Services.UserInputService.GetUserInput("Telefonnummer? ", contextHeader);
-        var email = Services.UserInputService.GetUserInput("Mejl? ", contextHeader);
+        MessageHelper.ShowHeader("Ange ny adress");
+
+        var firstName = InputHelper.GetTextInput("Förnamn");
+        var lastName = InputHelper.GetTextInput("Efternamn");
+        var city = InputHelper.GetTextInput("Stad");
+        var postalCode = InputHelper.GetIntInput("Postkod");
+        var street = InputHelper.GetTextInput("Gata");
+        var houseNumber = InputHelper.GetTextInput("Husnummer");
+        var phone = InputHelper.GetTextInput("Telefonnummer");
+        var email = InputHelper.GetTextInput("Mejl");
 
         _checkoutService.SetCustomerAddress(city, postalCode, street, houseNumber, firstName, lastName, phone, email);
     }
@@ -118,36 +122,37 @@ internal class CheckoutView(WebshopApplication app)
 
     private async Task RenderOrderAsync(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
     {
-        string countryName = await App.DatabaseService.GetCountryName(App.CurrentUser.Address!.CountryId);
+        string countryName = await App.Database.GetCountryName(App.CurrentUser.Address!.CountryId);
 
         Console.Clear();
         Console.WriteLine($"""
             Din address är:
 
-            Land: {countryName}
-            Stad: {App.CurrentUser.Address.City}
-            Postkod: {App.CurrentUser.Address.PostalCode}
-            Gata: {App.CurrentUser.Address.Street}
-            Husnummer: {App.CurrentUser.Address.HouseNumber}
+            Land:               {countryName}
+            Stad:               {App.CurrentUser.Address.City}
+            Postkod:            {App.CurrentUser.Address.PostalCode}
+            Gata:               {App.CurrentUser.Address.Street}
+            Husnummer:          {App.CurrentUser.Address.HouseNumber}
 
             Ditt valda leveransalternativ är:
 
-            {shippingMethod.Name}
-            Kostnad: {shippingMethod.Price}
+            Fraktmetod:         {shippingMethod.Name}
+            Kostnad:            {shippingMethod.Price}
 
             Ditt valda betalsätt är:
 
-            {paymentMethod.Name}
-            Eventuell kostnad: {paymentMethod.TransactionFee}
+            Betalmetod:         {paymentMethod.Name}
+            Eventuell kostnad:  {paymentMethod.TransactionFee}
 
             Din order inklusive kostnad:
+
             """);
 
         App.Basket.ListBasketItems();
 
         Console.WriteLine($"""
-            Kostnad: {App.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
-            Varav moms: {App.Basket.GetTotalTax()}
+            Kostnad:            {App.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
+            Varav moms:         {App.Basket.GetTotalTax()}
             
             Stämmer detta? Y/n
             """);
@@ -157,21 +162,21 @@ internal class CheckoutView(WebshopApplication app)
     {
         Console.Clear();
 
-        string countryName = await App.DatabaseService.GetCountryName(App.CurrentUser.Address!.CountryId);
+        string countryName = await App.Database.GetCountryName(App.CurrentUser.Address!.CountryId);
 
         var address = App.CurrentUser.Address;
 
         Console.WriteLine($"""
                 Din sparade adress och kontaktuppgifter är:
 
-                Land: {countryName}
-                Stad: {address.City}
-                Postkod: {address.PostalCode}
-                Gata: {address.Street}
-                Husnummer: {address.HouseNumber}
+                Land:       {countryName}
+                Stad:       {address.City}
+                Postkod:    {address.PostalCode}
+                Gata:       {address.Street}
+                Husnummer:  {address.HouseNumber}
 
-                Telefon: {App.CurrentUser.Phone}
-                Mejl: {App.CurrentUser.Email}
+                Telefon:    {App.CurrentUser.Phone}
+                Mejl:       {App.CurrentUser.Email}
 
                 Stämmer detta? Y/n:
                 """);

@@ -1,4 +1,6 @@
 ﻿
+using Webshop.Helpers;
+
 namespace Webshop.Views;
 
 internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplication adminApp) : IMenu
@@ -59,11 +61,8 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
         {
             Console.CursorVisible = true;
 
-            Console.WriteLine($"""
-
-            {HeaderText}
-
-            """);
+            Console.WriteLine();
+            MessageHelper.ShowHeader(HeaderText);
 
             foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
             {

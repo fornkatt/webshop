@@ -1,4 +1,6 @@
-﻿namespace Webshop.Views;
+﻿using Webshop.Helpers;
+
+namespace Webshop.Views;
 
 // This view does not extend MenuBase, I made this decision because it makes blocking I/O calls so displaying PersistentMenuItems here is pointless.
 // It also does not need to be coupled to MenuBase since we probably do not want to go to a separate view from here
@@ -19,7 +21,7 @@ internal class FreeSearchView(WebshopApplication app)
                 var input = GetSearchInput();
                 if (input == null) return;
 
-                var searchedItems = await App.DatabaseService.GetSearchedItems(input);
+                var searchedItems = await App.Database.GetSearchedItems(input);
 
                 if (!HandleEmptyResults(searchedItems))
                 {
@@ -40,7 +42,7 @@ internal class FreeSearchView(WebshopApplication app)
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Ett fel inträffade, försök igen. {e.Message}");
+            MessageHelper.ShowError($"Ett fel inträffade, försök igen. {e.Message}.");
         }
         finally
         {
@@ -61,7 +63,7 @@ internal class FreeSearchView(WebshopApplication app)
 
             var input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrWhiteSpace(input))
             {
                 continue;
             }
@@ -131,8 +133,8 @@ internal class FreeSearchView(WebshopApplication app)
         {
             var item = searchedItems[i];
             Console.WriteLine($"""
-                {i + 1}. {item.Name}
-                {item.Price:C}
+                {i + 1}.    {item.Name}
+                            {item.Price:C}
 
                 """);
         }

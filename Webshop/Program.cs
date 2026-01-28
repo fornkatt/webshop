@@ -11,16 +11,6 @@ internal class Program
 
         Console.CursorVisible = false;
 
-        try
-        {
-            Console.SetWindowSize(20, 20);
-            Console.SetBufferSize(160, 1000);
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            File.WriteAllText("Log.txt", $"{e}\n");
-        }
-
         var webshop = new WebshopApplication();
 
         await webshop.GoToMainMenuAsync();

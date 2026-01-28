@@ -10,7 +10,7 @@ internal class CategoriesView(string headerText, WebshopApplication app) : MenuB
     {
         if (_categories.Count == 0)
         {
-            _categories = await App.DatabaseService.GetAllCategoriesAsync();
+            _categories = await App.Database.GetAllCategoriesAsync();
         }
 
         for (int i = 0; i < _categories.Count; i++)
@@ -28,7 +28,7 @@ internal class CategoriesView(string headerText, WebshopApplication app) : MenuB
         {
             var category = _categories[choice - 1];
 
-            var products = await App.DatabaseService.GetProductsPerCategoryAsync(category.Id);
+            var products = await App.Database.GetProductsPerCategoryAsync(category.Id);
 
             var productListView = new ProductListView(category.Name, products, App);
             await productListView.ActivateAsync();

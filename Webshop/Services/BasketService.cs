@@ -37,8 +37,10 @@ internal class BasketService
     {
         if (_basketItems.Count == 0)
         {
-            Console.WriteLine("Varukorgen är tom. Get shopping!");
-            Console.WriteLine();
+            Console.WriteLine("""
+                Varukorgen är tom. Get shopping!
+
+                """);
             return;
         }
 
@@ -47,8 +49,8 @@ internal class BasketService
         {
             var totalProductPrice = (item.Product.Price ?? 0) * item.Quantity;
             Console.WriteLine($"""
-                    {i}. {item.Product.Name} - {totalProductPrice} kr
-                        {item.Quantity} st
+                    {i}.    {item.Product.Name} - {totalProductPrice} kr
+                                                  {item.Quantity} st
 
                     """);
             i++;

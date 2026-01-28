@@ -2,12 +2,13 @@
 
 internal class AdminApplication
 {
-    public Services.DatabaseServices Database { get; }
+    internal Services.DatabaseService Database { get; }
     private Views.AdminView AdminView { get; }
 
     internal AdminApplication()
     {
-        Database = new Services.DatabaseServices();
+
+        Database = new Services.DatabaseService();
         AdminView = new Views.AdminView("Adminpanelen", this);
     }
 

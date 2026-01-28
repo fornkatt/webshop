@@ -12,7 +12,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         DisplayBasketItems();
     }
 
-    private void HandleSelectedProductAsync((Product Product, int Quantity) selectedItem)
+    private void HandleSelectedProduct((Product Product, int Quantity) selectedItem)
     {
         while (true)
         {
@@ -67,6 +67,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         {
             var totalProductPrice = (item.Product.Price ?? 0) * item.Quantity;
             Console.WriteLine($"""
+
                 {i}. {item.Product.Name} - {totalProductPrice} kr
                     {item.Quantity} st
 
@@ -75,10 +76,9 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         }
 
         Console.WriteLine($"""
-            Antal artiklar i varukorgen: {App.Basket.GetTotalItemCount()}
-            Total kostnad: {App.Basket.GetTotal()}
-            Varav moms: {App.Basket.GetTotalTax()}
-
+            Antal artiklar i varukorgen:    {App.Basket.GetTotalItemCount()}
+            Total kostnad:                  {App.Basket.GetTotal()}
+            Varav moms:                     {App.Basket.GetTotalTax()}
 
             Välj en produkt för att ändra! (Sida {_currentPage + 1}/{(basketItems.Count + ItemsPerPage - 1) / ItemsPerPage})
             """);
@@ -113,7 +113,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         {
             var selectedItem = pageItems[choice - 1];
 
-            HandleSelectedProductAsync(selectedItem);
+            HandleSelectedProduct(selectedItem);
         }
     }
     internal enum MenuItems
