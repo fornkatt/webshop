@@ -20,6 +20,9 @@ internal class LogoutView(WebshopApplication app)
 
             if (!Helpers.InputHelper.GetConfirmation("Är du säker på att du vill logga ut?")) return;
 
+            await App.MongoLogService.LogActionAsync("Kund utloggad", App.CurrentUser.Id, 
+                App.CurrentUser.FirstName, App.CurrentUser.Email);
+
             App.CurrentUser = new()
             {
                 FirstName = "guestUser" + Random.Shared.Next(0, 10000000),

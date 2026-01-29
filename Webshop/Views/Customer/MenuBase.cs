@@ -53,21 +53,28 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     }
     private async Task RenderPersistentMenuItemsAsync()
     {
-        foreach (PersistentMenuItems item in Enum.GetValues(typeof(PersistentMenuItems)))
+        try
         {
-            if (ShouldHideMenuItem(item))
+            foreach (PersistentMenuItems item in Enum.GetValues(typeof(PersistentMenuItems)))
             {
-                continue;
-            }
+                if (ShouldHideMenuItem(item))
+                {
+                    continue;
+                }
 
-            var menuItem = $"[{(char)item}] {PersistentMenuItemsLocalizedNames[item]}";
-            Console.Write($"{menuItem, -20}");
-        }
-        Console.WriteLine($"""
+                var menuItem = $"[{(char)item}] {PersistentMenuItemsLocalizedNames[item]}";
+                Console.Write($"{menuItem, -25}");
+            }
+            Console.WriteLine($"""
             
 
-            Inloggad som: {App.CurrentUser.FirstName}
+            Användare: {App.CurrentUser.FirstName}
             """);
+        }
+        catch (Exception e)
+        {
+            Helpers.MessageHelper.ShowError($"Något gick fel: {e.Message}");
+        }
     }
     private protected virtual async Task RenderMenuAsync()
     {

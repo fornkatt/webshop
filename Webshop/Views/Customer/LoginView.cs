@@ -51,6 +51,7 @@ internal class LoginView(WebshopApplication app)
 
                 if (username == adminUsername && password == adminPassword)
                 {
+                    await App.MongoLogService.LogActionAsync("Admin inloggning", null, "admin");
                     var adminApp = new AdminApplication();
                     await adminApp.GoToAdminViewAsync();
                     return;
@@ -70,7 +71,7 @@ internal class LoginView(WebshopApplication app)
                 }
 
                 App.CurrentUser = customer;
-
+                await App.MongoLogService.LogActionAsync("Inloggning", App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
                 return;
             }
         }

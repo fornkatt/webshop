@@ -46,20 +46,26 @@ internal class CreateAccountView(WebshopApplication app)
         if (await _createAccountService.SetUsernameAndPassword(username, password))
         {
             await App.Database.UpdateCustomerAsync(App.CurrentUser);
+            await App.MongoLogService.LogActionAsync("Nytt konto", App.CurrentUser.Id, 
+                App.CurrentUser.FirstName, App.CurrentUser.Email, "Konverterat från gästkonto");
+
             MessageHelper.ShowSuccess("Konto skapat!");
             return;
         }
     }
     private async Task CreateNewAccountAsync()
     {
-        var (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+        var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
         var (username, password) = _customerRegistrationHelper.GetNewUsernameAndPassword();
 
-        _createAccountService.SetCustomerAddress(region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
+        _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
 
         if (await _createAccountService.SetUsernameAndPassword(username, password))
         {
             await App.Database.AddNewCustomerAsync(App.CurrentUser);
+            await App.MongoLogService.LogActionAsync("Nytt konto", App.CurrentUser.Id,
+                App.CurrentUser.FirstName, App.CurrentUser.Email, "Ny användare");
+
             MessageHelper.ShowSuccess("Konto skapat!");
             return;
         }

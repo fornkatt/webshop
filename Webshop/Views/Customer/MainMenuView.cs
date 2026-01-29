@@ -45,6 +45,14 @@ internal class MainMenuView(string headerText, WebshopApplication app) : MenuBas
         _selectedProducts = await App.Database.GetSelectedProductsAsync();
 
         Console.WriteLine();
+        Console.WriteLine("""
+
+
+
+
+
+
+            """);
         MessageHelper.ShowHeader("Utvalda produkter");
 
         DisplaySelectedProducts();

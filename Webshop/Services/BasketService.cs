@@ -2,16 +2,17 @@
 
 namespace Webshop.Services;
 
-internal sealed class BasketService
+internal sealed class BasketService(MongoLogService? logService = null)
 {
     private readonly Dictionary<int, (Product Product, int Quantity)> _basketItems = [];
+    private readonly MongoLogService? _logService = logService;
 
     internal void ReplaceBasketItem((Product Product, int Quantity) item)
     {
         _basketItems[item.Product.Id] = (item.Product, item.Quantity);
     }
 
-    internal void AddToBasket(Product product)
+    internal async Task AddToBasket(Product product, int? userId = null, string? name = null, string? email = null)
     {
         if (_basketItems.ContainsKey(product.Id))
         {
@@ -22,13 +23,22 @@ internal sealed class BasketService
         {
             _basketItems[product.Id] = (product, 1);
         }
+        if (_logService != null)
+        {
+            await _logService.LogActionAsync("Produkt tillagd i varukorgen", userId, name, email, $"Produkt: {product.Name}");
+        }
     }
 
-    internal void RemoveFromBasket(Product product)
+    internal async Task RemoveFromBasket(Product product, int? userId = null, string? name = null, string? email = null)
     {
         if (_basketItems.ContainsKey(product.Id))
         {
             _basketItems.Remove(product.Id);
+
+            if (_logService != null)
+            {
+                await _logService.LogActionAsync("Produkt borttagen ur varukorgen", userId, name, email, $"Produkt: {product.Name}");
+            }
         }
     }
 

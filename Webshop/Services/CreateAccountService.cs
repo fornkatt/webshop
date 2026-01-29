@@ -21,6 +21,7 @@ internal sealed class CreateAccountService(WebshopApplication app)
         }
     }
     internal void SetCustomerAddress(
+        int age,
         string region,
         string city,
         int postalCode,
@@ -46,6 +47,7 @@ internal sealed class CreateAccountService(WebshopApplication app)
 
         App.CurrentUser.FirstName = firstName;
         App.CurrentUser.LastName = lastName;
+        App.CurrentUser.Age = age;
         App.CurrentUser.Phone = phone;
         App.CurrentUser.Email = email;
     }

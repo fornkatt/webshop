@@ -91,7 +91,7 @@ internal sealed class DatabaseSeederService
                 new Product { Name = "Malwarebytes Premium", ShortDescription = "Antivirusprogram", DetailedDescription = "1 års licens, skydd mot malware och ransomware", CategoryId = 2, SupplierId = 2, Stock = 120, Price = 449m, OriginalPrice = 449m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
 
                 // Datortillbehör
-                new Product { Name = "Logitech MX Master 3S", ShortDescription = "Trådlös mus", DetailedDescription = "Ergonomisk mus med 8K DPI sensor, tysta knappar", CategoryId = 3, SupplierId = 3, Stock = 55, Price = 1199m, OriginalPrice = 1199m, IsActive = true, IsSelectedItem = true, IsSaleItem = false, IsDiscontinued = false },
+                new Product { Name = "Logitech MX Master 3S", ShortDescription = "Trådlös mus", DetailedDescription = "Ergonomisk mus med 8K DPI sensor, tysta knappar", CategoryId = 3, SupplierId = 3, Stock = 55, Price = 799m, OriginalPrice = 1199m, IsActive = true, IsSelectedItem = true, IsSaleItem = true, IsDiscontinued = false },
                 new Product { Name = "Keychron K8 Pro", ShortDescription = "Mekaniskt tangentbord", DetailedDescription = "Trådlöst mekaniskt tangentbord, hot-swappable", CategoryId = 3, SupplierId = 3, Stock = 32, Price = 1799m, OriginalPrice = 1799m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "HyperX Cloud III", ShortDescription = "Gaming headset", DetailedDescription = "7.1 surroundljud, bekväma öronkuddar", CategoryId = 3, SupplierId = 3, Stock = 48, Price = 1299m, OriginalPrice = 1299m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Logitech C920 Pro", ShortDescription = "Webbkamera", DetailedDescription = "Full HD 1080p webbkamera med autofokus", CategoryId = 3, SupplierId = 3, Stock = 65, Price = 899m, OriginalPrice = 1199m, IsActive = true, IsSelectedItem = false, IsSaleItem = true, IsDiscontinued = false },
@@ -110,37 +110,54 @@ internal sealed class DatabaseSeederService
         // Seed Customers
         if (!db.Customers.Any())
         {
-            var swedishCities = new[] { "Stockholm", "Göteborg", "Malmö", "Uppsala", "Västerås", "Örebro", "Linköping", "Helsingborg", "Jönköping", "Norrköping" };
-            var swedishRegions = new[] { "Stockholms län", "Västra Götalands län", "Skåne län", "Uppsala län", "Västmanlands län", "Örebro län", "Östergötlands län", "Hallands län", "Jönköpings län" };
+            // Map regions to their actual cities
+            var regionCityMap = new Dictionary<string, string[]>
+            {
+                { "Stockholms län", new[] { "Stockholm", "Solna", "Nacka", "Sundbyberg" } },
+                { "Västra Götalands län", new[] { "Göteborg", "Borås", "Trollhättan", "Uddevalla" } },
+                { "Skåne län", new[] { "Malmö", "Helsingborg", "Lund", "Kristianstad" } },
+                { "Uppsala län", new[] { "Uppsala", "Enköping", "Tierp" } },
+                { "Västmanlands län", new[] { "Västerås", "Köping", "Sala" } },
+                { "Örebro län", new[] { "Örebro", "Lindesberg", "Karlskoga" } },
+                { "Östergötlands län", new[] { "Linköping", "Norrköping", "Motala" } },
+                { "Hallands län", new[] { "Halmstad", "Varberg", "Kungsbacka" } },
+                { "Jönköpings län", new[] { "Jönköping", "Värnamo", "Nässjö" } }
+            };
+
             var streets = new[] { "Storgatan", "Kungsgatan", "Drottninggatan", "Vasagatan", "Sveavägen", "Birger Jarlsgatan", "Hamngatan", "Östergatan", "Norra vägen", "Södra vägen" };
 
             var users = new List<(string FirstName, string LastName, string Username, int Age)>
             {
-                ("Erik", "Andersson", "erik.a", 38),
-                ("Anna", "Johansson", "anna.j", 31),
-                ("Lars", "Karlsson", "lars.k", 45),
-                ("Maria", "Nilsson", "maria.n", 35),
-                ("Per", "Eriksson", "per.e", 28),
-                ("Karin", "Larsson", "karin.l", 40),
-                ("Johan", "Olsson", "johan.o", 33),
-                ("Emma", "Persson", "emma.p", 26),
-                ("Anders", "Svensson", "anders.s", 42),
-                ("Linda", "Gustafsson", "linda.g", 30)
+                ("Erik", "Andersson", "erik", 38),
+                ("Anna", "Johansson", "anna", 31),
+                ("Lars", "Karlsson", "lars", 45),
+                ("Maria", "Nilsson", "maria", 35),
+                ("Per", "Eriksson", "per", 28),
+                ("Karin", "Larsson", "karin", 40),
+                ("Johan", "Olsson", "johan", 33),
+                ("Emma", "Persson", "emma", 26),
+                ("Anders", "Svensson", "anders", 42),
+                ("Linda", "Gustafsson", "linda", 30)
             };
 
             var random = new Random(42);
             var customers = new List<Customer>();
+            var regions = regionCityMap.Keys.ToArray();
 
             for (int i = 0; i < users.Count; i++)
             {
                 var user = users[i];
+                var region = regions[random.Next(regions.Length)];
+                var citiesInRegion = regionCityMap[region];
+                var city = citiesInRegion[random.Next(citiesInRegion.Length)];
+
                 var customer = new Customer
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Username = user.Username,
-                    Password = "password123",
-                    Email = $"{user.Username}@example.se",
+                    Password = "test123",
+                    Email = $"{user.Username}@test.se",
                     Phone = $"070-{random.Next(100, 999)}{random.Next(10, 99)}{random.Next(10, 99)}",
                     Age = user.Age,
                     IsActive = true,
@@ -148,8 +165,8 @@ internal sealed class DatabaseSeederService
                     Address = new Address
                     {
                         CountryId = 1,
-                        Region = swedishRegions[random.Next(swedishRegions.Length)],
-                        City = swedishCities[random.Next(swedishCities.Length)],
+                        Region = region,
+                        City = city,
                         PostalCode = random.Next(10000, 99999),
                         Street = streets[random.Next(streets.Length)],
                         HouseNumber = random.Next(2) == 0

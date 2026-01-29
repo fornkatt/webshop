@@ -2,7 +2,7 @@
 
 internal class CustomerRegistrationHelper()
 {
-    internal (string firstName, string lastName, string region, string city, int postalCode, string street, string houseNumber, string phone, string email) CollectAddressInput()
+    internal (string firstName, string lastName, int age, string region, string city, int postalCode, string street, string houseNumber, string phone, string email) CollectAddressInput()
     {
         Console.Clear();
 
@@ -10,6 +10,7 @@ internal class CustomerRegistrationHelper()
 
         var firstName = InputHelper.GetTextInput("Förnamn");
         var lastName = InputHelper.GetTextInput("Efternamn");
+        var age = InputHelper.GetIntInput("Ålder");
         var region = InputHelper.GetTextInput("Län");
         var city = InputHelper.GetTextInput("Stad");
         var postalCode = InputHelper.GetIntInput("Postkod");
@@ -18,7 +19,7 @@ internal class CustomerRegistrationHelper()
         var phone = InputHelper.GetTextInput("Telefonnummer");
         var email = InputHelper.GetTextInput("Mejl");
 
-        return (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email);
+        return (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email);
     }
     internal (string username, string password) GetNewUsernameAndPassword()
     {

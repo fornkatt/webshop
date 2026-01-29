@@ -48,7 +48,7 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
         switch ((MenuItems)choice)
         {
             case MenuItems.AddItem:
-                App.Basket.AddToBasket(Product);
+                await App.Basket.AddToBasket(Product, App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
                 break;
         }
     }

@@ -17,7 +17,7 @@ internal class WebshopDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(Helpers.ConfigHelper.GetConnectionString());
+        optionsBuilder.UseSqlServer(Helpers.ConfigHelper.GetWebshopConnectionString());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

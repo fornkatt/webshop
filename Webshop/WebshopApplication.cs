@@ -4,6 +4,7 @@ namespace Webshop;
 
 internal class WebshopApplication
 {
+    internal Services.MongoLogService MongoLogService { get; }
     internal Services.BasketService Basket { get; }
     internal Models.Customer CurrentUser { get; set; }
     internal Services.CustomerDatabaseService Database { get; }
@@ -18,9 +19,10 @@ internal class WebshopApplication
             FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
             IsGuest = true
         };
+        MongoLogService = new Services.MongoLogService();
         Database = new Services.CustomerDatabaseService();
-        Basket = new Services.BasketService();
-        MainMenu = new MainMenuView("Sveriges bästa butik inom PC och hårdvara!", this);
+        Basket = new Services.BasketService(MongoLogService);
+        MainMenu = new MainMenuView("Datorhallen - Sveriges bästa butik inom PC och hårdvara!", this);
     }
 
     internal async Task GoToMainMenuAsync()

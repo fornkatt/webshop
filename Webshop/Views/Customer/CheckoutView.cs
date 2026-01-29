@@ -24,16 +24,16 @@ internal class CheckoutView(WebshopApplication app)
 
                 if (!InputHelper.GetConfirmation("Stämmer detta?"))
                 {
-                    var (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+                    var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
 
-                    _createAccountService.SetCustomerAddress(region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
+                    _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
                 }
             }
             else
             {
-                var (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+                var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
 
-                _createAccountService.SetCustomerAddress(region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
+                _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
             }
 
             var shippingMethod = await _checkoutService.GetShippingMethodAsync();
@@ -51,6 +51,8 @@ internal class CheckoutView(WebshopApplication app)
 
             if (await _checkoutService.CompleteOrder(shippingMethod, paymentMethod))
             {
+                Console.Clear();
+
                 MessageHelper.ShowSuccess("""
                     Grattis till ditt köp!
                     
@@ -89,7 +91,11 @@ internal class CheckoutView(WebshopApplication app)
 
         Console.Clear();
         Console.WriteLine($"""
-            Din address är:
+            Dina uppgifter är:
+
+            Namn:               {App.CurrentUser.FirstName} {App.CurrentUser.LastName}
+            Mejl:               {App.CurrentUser.Email}
+            Telefon             {App.CurrentUser.Phone}
 
             Land:               {countryName}
             Stad:               {App.CurrentUser.Address.City}
@@ -106,7 +112,7 @@ internal class CheckoutView(WebshopApplication app)
             Ditt valda betalsätt är:
 
             Betalmetod:         {paymentMethod.Name}
-            Eventuell kostnad:  {paymentMethod.TransactionFee}
+            Kostnad:            {paymentMethod.TransactionFee}
 
             Din order inklusive kostnad:
 

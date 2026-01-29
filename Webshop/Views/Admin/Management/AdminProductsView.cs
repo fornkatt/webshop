@@ -335,6 +335,8 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
 
             await AdminApp.Database.AddNewProductAsync(product);
 
+            await AdminApp.MongoLogService.LogActionAsync("Ny produkt tillagd", null, "admin", null, product.Name);
+
             MessageHelper.ShowSuccess($"Ny produkt ({product.Name}) tillagd!");
         }
         catch(Exception e)

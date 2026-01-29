@@ -114,7 +114,7 @@ internal sealed class CustomerDatabaseService : DatabaseServiceBase
             AND p.IsActive = 1
             """;
 
-        using var connection = new SqlConnection(Helpers.ConfigHelper.GetConnectionString());
+        using var connection = new SqlConnection(Helpers.ConfigHelper.GetWebshopConnectionString());
 
         var searchedItems = await connection.QueryAsync<Product>(sql, new { SearchTerm = userInput });
 

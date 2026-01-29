@@ -10,7 +10,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         DisplayBasketItems();
     }
 
-    private void HandleSelectedProduct((Models.Product Product, int Quantity) selectedItem)
+    private async Task HandleSelectedProduct((Models.Product Product, int Quantity) selectedItem)
     {
         while (true)
         {
@@ -39,7 +39,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
             }
             if (key == ConsoleKey.X)
             {
-                App.Basket.RemoveFromBasket(selectedItem.Product);
+                await App.Basket.RemoveFromBasket(selectedItem.Product, App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
                 return;
             }
             if (key == ConsoleKey.S)
@@ -112,7 +112,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         {
             var selectedItem = pageItems[choice - 1];
 
-            HandleSelectedProduct(selectedItem);
+            await HandleSelectedProduct(selectedItem);
         }
     }
     internal enum MenuItems

@@ -5,7 +5,7 @@
 namespace Webshop.Migrations
 {
     /// <inheritdoc />
-    public partial class test3 : Migration
+    public partial class Recreateddatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -27,17 +27,30 @@ internal class ConfigHelper
         return (settings.Admin?.Username ?? "admin", settings.Admin?.Password ?? "Admin123");
     }
 
-    public static string? GetConnectionString()
+    public static string? GetWebshopConnectionString()
     {
         var settings = GetSettings();
 
         return settings.ConnectionStrings?.WebshopDb;
     }
 
+    public static string? GetMongoConnectionString()
+    {
+        var settings = GetSettings();
+        return settings.ConnectionStrings?.MongoDb;
+    }
+
+    public static string GetMongoDatabaseName()
+    {
+        var settings = GetSettings();
+        return settings.MongoDb?.DatabaseName ?? "WebshopLogs";
+    }
+
     internal class AppSettings
     {
         public AdminConfig? Admin { get; set; }
         public ConnectionStringsConfig? ConnectionStrings { get; set; }
+        public MongoDbConfig? MongoDb { get; set; }
     }
 
     internal class AdminConfig
@@ -49,5 +62,11 @@ internal class ConfigHelper
     internal class ConnectionStringsConfig
     {
         public string? WebshopDb { get; set; }
+        public string? MongoDb { get; set; }
+    }
+
+    internal class MongoDbConfig
+    {
+        public string? DatabaseName { get; set; }
     }
 }

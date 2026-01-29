@@ -16,6 +16,7 @@ internal class MessageHelper
     internal static void ShowError(string message)
     {
         Console.WriteLine($"""
+
             {message}
 
             Tryck på valfi tangent för att fortsätta.
