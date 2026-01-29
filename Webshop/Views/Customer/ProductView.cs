@@ -1,4 +1,4 @@
-﻿namespace Webshop.Views;
+﻿namespace Webshop.Views.Customer;
 
 internal class ProductView(string headerText, Models.Product product, WebshopApplication app) : MenuBase<ProductView.MenuItems>(headerText, app)
 {
@@ -13,15 +13,34 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
         { MenuItems.AddItem, "Lägg till i varukorgen." }
     };
 
-    protected override async Task OnRenderMenuAsync()
+    private protected override async Task RenderMenuAsync()
     {
-        Console.WriteLine($"""
+        try
+        {
+            Console.CursorVisible = false;
+
+            Console.WriteLine();
+
+            foreach (MenuItems item in Enum.GetValues(typeof(MenuItems)))
+            {
+                Console.WriteLine($"{Convert.ToInt16(item)}. {MenuItemLocalizedNames[item]}");
+            }
+
+            Console.WriteLine();
+            Helpers.MessageHelper.ShowHeader(HeaderText);
+
+            Console.WriteLine($"""
             {Product.ShortDescription}
 
             {Product.DetailedDescription}
 
             {Product.Price}
             """);
+        }
+        finally
+        {
+            Console.CursorVisible = false;
+        }
     }
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)

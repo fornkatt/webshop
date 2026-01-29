@@ -1,4 +1,4 @@
-﻿namespace Webshop.Views;
+﻿namespace Webshop.Views.Shared;
 
 internal interface IMenu
 {

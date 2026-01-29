@@ -1,6 +1,4 @@
-﻿using Webshop.Models;
-
-namespace Webshop.Views;
+﻿namespace Webshop.Views.Customer;
 
 internal class BasketView(string headerText, WebshopApplication app) : MenuBase<BasketView.MenuItems>(headerText, app)
 {
@@ -12,7 +10,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         DisplayBasketItems();
     }
 
-    private void HandleSelectedProduct((Product Product, int Quantity) selectedItem)
+    private void HandleSelectedProduct((Models.Product Product, int Quantity) selectedItem)
     {
         while (true)
         {
@@ -76,6 +74,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
         }
 
         Console.WriteLine($"""
+
             Antal artiklar i varukorgen:    {App.Basket.GetTotalItemCount()}
             Total kostnad:                  {App.Basket.GetTotal()}
             Varav moms:                     {App.Basket.GetTotalTax()}

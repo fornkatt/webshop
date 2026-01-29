@@ -1,4 +1,4 @@
-﻿namespace Webshop.Views;
+﻿namespace Webshop.Views.Customer;
 
 internal class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
 {

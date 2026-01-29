@@ -1,6 +1,6 @@
 ﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Customer;
 
 // I opted for not extending MenuBase in this view, the reasoning behind this is that while it could technically do that
 // this view is heavy on data collection, display and confirmation dialogs which block user input anyway,
@@ -8,7 +8,9 @@ namespace Webshop.Views;
 internal class CheckoutView(WebshopApplication app)
 {
     private readonly Services.CheckoutService _checkoutService = new(app);
-    protected WebshopApplication App { get; } = app;
+    private readonly Services.CreateAccountService _createAccountService = new(app);
+    private readonly CustomerRegistrationHelper _customerRegistrationHelper = new();
+    private WebshopApplication App { get; } = app;
 
     internal async Task ActivateAsync()
     {
@@ -20,14 +22,18 @@ internal class CheckoutView(WebshopApplication app)
             {
                 await ShowCurrentAddressAsync();
 
-                if (!GetUserConfirmation())
+                if (!InputHelper.GetConfirmation("Stämmer detta?"))
                 {
-                    CollectAddressInput();
+                    var (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+
+                    _createAccountService.SetCustomerAddress(region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
                 }
             }
             else
             {
-                CollectAddressInput();
+                var (firstName, lastName, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+
+                _createAccountService.SetCustomerAddress(region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
             }
 
             var shippingMethod = await _checkoutService.GetShippingMethodAsync();
@@ -38,86 +44,43 @@ internal class CheckoutView(WebshopApplication app)
 
             await RenderOrderAsync(shippingMethod, paymentMethod);
 
-            if (!GetUserConfirmation())
+            if (!InputHelper.GetConfirmation("Stämmer detta?"))
             {
                 return;
             }
 
             if (await _checkoutService.CompleteOrder(shippingMethod, paymentMethod))
             {
-                ShowSuccessMessage();
+                MessageHelper.ShowSuccess("""
+                    Grattis till ditt köp!
+                    
+            Dina varor kommer skickas till dig omgående, senast nästkommande vardag.
+
+            Vi hoppas du är nöjd med din upplevelse hos oss!
+            """);
+
+                if (App.CurrentUser.IsGuest && InputHelper.GetConfirmation("Vill du skapa ett konto?"))
+                {
+                    await new CreateAccountView(App).ActivateAsync();
+                }
             }
             else
             {
-                ShowErrorMessage("Kunde inte slutföra beställningen eller beställning avbruten.");
+                MessageHelper.ShowError("Kunde inte slutföra beställningen eller beställning avbruten.");
             }
+        }
+        catch (Exception e)
+        {
+            MessageHelper.ShowError($"""
+                Ett fel inträffade under utcheckningen: {e.Message}
+
+                Din beställning har inte genomförts.
+                """);
         }
         finally
         {
             Console.CursorVisible = false;
         }
-    }
-
-    private bool GetUserConfirmation()
-    {
-        while (true)
-        {
-            var key = Console.ReadKey(true).Key;
-
-            if (key == ConsoleKey.Y)
-            {
-                return true;
-            }
-            if (key == ConsoleKey.N)
-            {
-                return false;
-            }
-        }
-    }
-
-    private void ShowErrorMessage(string message)
-    {
-        Console.Clear();
-        Console.WriteLine($"""
-            {message}
-
-            Tryck på valfri tangent för att fortsätta.
-            """);
-        Console.ReadKey(true);
-    }
-
-    private void CollectAddressInput()
-    {
-        Console.Clear();
-
-        MessageHelper.ShowHeader("Ange ny adress");
-
-        var firstName = InputHelper.GetTextInput("Förnamn");
-        var lastName = InputHelper.GetTextInput("Efternamn");
-        var city = InputHelper.GetTextInput("Stad");
-        var postalCode = InputHelper.GetIntInput("Postkod");
-        var street = InputHelper.GetTextInput("Gata");
-        var houseNumber = InputHelper.GetTextInput("Husnummer");
-        var phone = InputHelper.GetTextInput("Telefonnummer");
-        var email = InputHelper.GetTextInput("Mejl");
-
-        _checkoutService.SetCustomerAddress(city, postalCode, street, houseNumber, firstName, lastName, phone, email);
-    }
-
-    private void ShowSuccessMessage()
-    {
-        Console.Clear();
-        Console.WriteLine("""
-            Grattis till ditt köp!
-
-            Dina varor kommer skickas till dig omgående, senast nästkommande vardag.
-
-            Vi hoppas du är nöjd med din upplevelse hos oss!
-
-            Tryck på valfri tangent för att fortsätta.
-            """);
-
-        Console.ReadKey(true);
     }
 
     private async Task RenderOrderAsync(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
@@ -130,6 +93,7 @@ internal class CheckoutView(WebshopApplication app)
 
             Land:               {countryName}
             Stad:               {App.CurrentUser.Address.City}
+            Län:                {App.CurrentUser.Address.Region}
             Postkod:            {App.CurrentUser.Address.PostalCode}
             Gata:               {App.CurrentUser.Address.Street}
             Husnummer:          {App.CurrentUser.Address.HouseNumber}
@@ -153,8 +117,6 @@ internal class CheckoutView(WebshopApplication app)
         Console.WriteLine($"""
             Kostnad:            {App.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
             Varav moms:         {App.Basket.GetTotalTax()}
-            
-            Stämmer detta? Y/n
             """);
     }
 
@@ -170,6 +132,7 @@ internal class CheckoutView(WebshopApplication app)
                 Din sparade adress och kontaktuppgifter är:
 
                 Land:       {countryName}
+                Län:        {address.Region}
                 Stad:       {address.City}
                 Postkod:    {address.PostalCode}
                 Gata:       {address.Street}
@@ -177,8 +140,6 @@ internal class CheckoutView(WebshopApplication app)
 
                 Telefon:    {App.CurrentUser.Phone}
                 Mejl:       {App.CurrentUser.Email}
-
-                Stämmer detta? Y/n:
                 """);
     }
 }

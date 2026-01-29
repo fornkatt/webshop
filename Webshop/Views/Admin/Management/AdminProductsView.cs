@@ -1,6 +1,6 @@
 ﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Admin.Management;
 
 internal class AdminProductsView(string headerText, AdminApplication adminApp) :
     AdminMenuBase<AdminProductsView.MenuItems>(headerText, adminApp)
@@ -31,7 +31,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
 
     private async Task ListAllProductsAsync()
     {
-        var products = await AdminApp.Database.GetAllProductsForAdminAsync();
+        var products = await AdminApp.Database.GetAllProductsAsync();
 
         foreach (var product in products)
         {
@@ -59,12 +59,12 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
     {
         try
         {
-            var categories = await AdminApp.Database.GetAllCategoriesForAdminAsync();
+            var categories = await AdminApp.Database.GetAllCategoriesAsync();
             var categoryId = AdminHelper.SelectItem("Välj en kategori:", categories, c => c.Id, c => c.Name);
 
             if (categoryId == null) return;
 
-            var products = await AdminApp.Database.GetProductsPerCategoryForAdminAsync(categoryId);
+            var products = await AdminApp.Database.GetProductsPerCategoryAsync(categoryId);
             while (true)
             {
                 Console.Clear();
@@ -93,7 +93,12 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
                     Console.Clear();
                     Console.WriteLine($"""
                     Vill du [T]a bort eller [R]edigera produkten ({selectedProduct.Name})?
+
+                    OBS! Går endast att ta bort produkten om den inte finns med i ordrar!
+                    Vill du 'ta bort' en produkt, fundera istället på en 'soft-delete' genom att sätta produkten till inaktiv och/eller utgått i redigeringsläget!
+                    
                     Q för att avbryta.
+                    
                     """);
                     var key = Console.ReadKey(true).Key;
 
@@ -102,7 +107,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
                         case ConsoleKey.Q:
                             return;
                         case ConsoleKey.T:
-                            await AdminApp.Database.RemoveProductForAdminAsync(selectedProduct);
+                            await AdminApp.Database.RemoveProductAsync(selectedProduct);
 
                             MessageHelper.ShowSuccess($"""
                     Produkten: {selectedProduct.Name}
@@ -228,7 +233,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
 
     private async Task UpdateCategory(Models.Product product)
     {
-        var categories = await AdminApp.Database.GetAllCategoriesForAdminAsync();
+        var categories = await AdminApp.Database.GetAllCategoriesAsync();
         var categoryId = AdminHelper.SelectItem(
             "Välj ny kategori:",
             categories,
@@ -246,7 +251,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
 
     private async Task UpdateSupplier(Models.Product product)
     {
-        var suppliers = await AdminApp.Database.GetAllSuppliersForAdminAsync();
+        var suppliers = await AdminApp.Database.GetAllSuppliersAsync();
         var supplierId = AdminHelper.SelectItem(
             "Välj ny leverantör:",
             suppliers,
@@ -269,7 +274,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
         product.Category = null;
         product.Supplier = null;
 
-        await AdminApp.Database.UpdateProductForAdminAsync(product);
+        await AdminApp.Database.UpdateProductAsync(product);
 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
@@ -328,7 +333,7 @@ internal class AdminProductsView(string headerText, AdminApplication adminApp) :
                 IsDiscontinued = false
             };
 
-            await AdminApp.Database.AddNewProductForAdminAsync(product);
+            await AdminApp.Database.AddNewProductAsync(product);
 
             MessageHelper.ShowSuccess($"Ny produkt ({product.Name}) tillagd!");
         }

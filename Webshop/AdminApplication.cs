@@ -1,15 +1,16 @@
-﻿namespace Webshop;
+﻿using Webshop.Views.Admin.Management;
+
+namespace Webshop;
 
 internal class AdminApplication
 {
-    internal Services.DatabaseService Database { get; }
-    private Views.AdminView AdminView { get; }
+    internal Services.AdminDatabaseService Database { get; }
+    private AdminView AdminView { get; }
 
     internal AdminApplication()
     {
-
-        Database = new Services.DatabaseService();
-        AdminView = new Views.AdminView("Adminpanelen", this);
+        Database = new Services.AdminDatabaseService();
+        AdminView = new AdminView("Adminpanelen", this);
     }
 
     internal async Task GoToAdminViewAsync()

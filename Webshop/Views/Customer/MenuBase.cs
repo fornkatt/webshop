@@ -1,7 +1,7 @@
-﻿using System.Text;
-using Webshop.Helpers;
+﻿using Webshop.Views.Admin.Management;
+using Webshop.Views.Shared;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Customer;
 
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
@@ -12,6 +12,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     private enum PersistentMenuItems
     {
         Exit = 'A',
+        CreateAccount = 'K',
         Login = 'L',
         Logout = 'O',
         Basket = 'V',
@@ -24,6 +25,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     private static Dictionary<PersistentMenuItems, string> PersistentMenuItemsLocalizedNames => new()
     {
         { PersistentMenuItems.Exit, "Avsluta" },
+        { PersistentMenuItems.CreateAccount, "Skapa konto" },
         { PersistentMenuItems.Login, "Logga in" },
         { PersistentMenuItems.Logout, "Logga ut" },
         { PersistentMenuItems.Basket, "Varukorg" },
@@ -74,7 +76,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             Console.CursorVisible = false;
 
             Console.WriteLine();
-            MessageHelper.ShowHeader(HeaderText);
+            Helpers.MessageHelper.ShowHeader(HeaderText);
 
             foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
             {
@@ -98,6 +100,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             PersistentMenuItems.Basket when this is BasketView or AdminView => true,
             PersistentMenuItems.Back when this is MainMenuView => true,
             PersistentMenuItems.Home when this is MainMenuView => true,
+            PersistentMenuItems.CreateAccount when !App.CurrentUser.IsGuest => true,
             PersistentMenuItems.Login when App.IsLoggedIn => true,
             PersistentMenuItems.Logout when !App.IsLoggedIn => true,
             PersistentMenuItems.Login when this is AdminView => true,
@@ -129,6 +132,10 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
         {
             case PersistentMenuItems.Exit:
                 Environment.Exit(0);
+                break;
+            case PersistentMenuItems.CreateAccount:
+                if (!App.CurrentUser.IsGuest) return;
+                await new CreateAccountView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Search:
                 await new FreeSearchView(App).ActivateAsync();

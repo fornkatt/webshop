@@ -1,5 +1,4 @@
-﻿
-namespace Webshop.Views;
+﻿namespace Webshop.Views.Admin.Management;
 
 internal class AdminView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminView.MenuItems>(headerText, adminApp)
@@ -39,8 +38,7 @@ internal class AdminView(string headerText, AdminApplication adminApp) :
                 await new AdminCustomersView("Hantera kunder", AdminApp).ActivateAsync();
                 break;
             case MenuItems.Statistics:
-                Console.WriteLine("Statistik");
-                Console.ReadKey(true);
+                await new Statistics.AdminStatisticsView("Se statistik", AdminApp).ActivateAsync();
                 break;
         }
     }

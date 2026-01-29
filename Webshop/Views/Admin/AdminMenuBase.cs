@@ -1,7 +1,7 @@
-﻿
-using Webshop.Helpers;
+﻿using Webshop.Views.Admin.Management;
+using Webshop.Views.Shared;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Admin;
 
 internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplication adminApp) : IMenu
     where TMenuItems : Enum
@@ -62,7 +62,7 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
             Console.CursorVisible = true;
 
             Console.WriteLine();
-            MessageHelper.ShowHeader(HeaderText);
+            Helpers.MessageHelper.ShowHeader(HeaderText);
 
             foreach (TMenuItems item in Enum.GetValues(typeof(TMenuItems)))
             {
@@ -71,6 +71,10 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
             Console.WriteLine();
 
             await OnRenderMenuAsync();
+        }
+        catch (Exception e)
+        {
+            Helpers.MessageHelper.ShowError($"Något gick fel: {e.Message}");
         }
         finally
         {

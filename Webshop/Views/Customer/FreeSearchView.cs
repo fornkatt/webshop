@@ -1,6 +1,4 @@
-﻿using Webshop.Helpers;
-
-namespace Webshop.Views;
+﻿namespace Webshop.Views.Customer;
 
 // This view does not extend MenuBase, I made this decision because it makes blocking I/O calls so displaying PersistentMenuItems here is pointless.
 // It also does not need to be coupled to MenuBase since we probably do not want to go to a separate view from here
@@ -42,7 +40,7 @@ internal class FreeSearchView(WebshopApplication app)
         }
         catch (Exception e)
         {
-            MessageHelper.ShowError($"Ett fel inträffade, försök igen. {e.Message}.");
+            Helpers.MessageHelper.ShowError($"Ett fel inträffade, försök igen. {e.Message}.");
         }
         finally
         {

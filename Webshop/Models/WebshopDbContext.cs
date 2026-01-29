@@ -18,7 +18,6 @@ internal class WebshopDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(Helpers.ConfigHelper.GetConnectionString());
-        //optionsBuilder.UseSqlServer("Server=tcp:fornkatt.database.windows.net,1433;Initial Catalog=JohansDB;Persist Security Info=False;User ID=unplanned;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

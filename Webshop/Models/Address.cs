@@ -7,6 +7,7 @@ internal class Address
     public Customer? Customer { get; set; }
     public int? CountryId { get; set; }
     public Country? Country { get; set; }
+    public string? Region { get; set; }
     public string? City { get; set; }
     public int? PostalCode { get; set; }
     public string? Street { get; set; }

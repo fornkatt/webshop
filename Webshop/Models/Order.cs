@@ -13,6 +13,7 @@ internal class Order
     public int ShippingMethodId { get; set; }
     public ShippingMethod? ShippingMethod { get; set; }
     public decimal ShippingCost { get; set; }
+    public decimal PaymentMethodCost { get; set; }
     public int PaymentMethodId { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
     public string? PaymentTransactionId { get; set; }

@@ -1,14 +1,13 @@
-﻿
-using Webshop.Helpers;
+﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Admin.Management;
 
 internal class AdminCustomersView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminCustomersView.MenuItems>(headerText, adminApp)
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
     {
-        { MenuItems.ListCustomers, "Lista befintliga kunder" },
+        { MenuItems.ListCustomers, "Orderhistorik" },
         { MenuItems.AddCustomer, "Lägg till ny kund" },
         { MenuItems.EditOrRemoveCustomer, "Redigera eller ta bort kund" }
     };
@@ -18,8 +17,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
         switch ((MenuItems)choice)
         {
             case MenuItems.ListCustomers:
-                await ListAllCustomersAsync();
-                MessageHelper.ShowSuccess("Alla kunder listade!");
+                await ViewOrderHistoryAsync();
                 break;
             case MenuItems.AddCustomer:
                 await AddCustomerAsync();
@@ -37,11 +35,155 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
         EditOrRemoveCustomer
     }
 
-    internal async Task EditOrRemoveCustomerAsync()
+    private async Task ViewOrderHistoryAsync()
     {
         try
         {
-            var customers = await AdminApp.Database.GetAllCustomersForAdminAsync();
+            Console.Clear();
+            MessageHelper.ShowHeader("Se orderhistorik");
+
+            var customers = await AdminApp.Database.GetAllCustomersAsync();
+
+            ListAllCustomers(customers);
+
+            var input = InputHelper.GetIntInput("Välj en kund att visa") - 1;
+            Console.WriteLine();
+
+            if (input > customers.Count || input < 0)
+            {
+                MessageHelper.ShowError("Ogiltigt val");
+                return;
+            }
+
+            var customer = customers[input];
+
+            Console.Clear();
+            DisplaySelectedCustomer(customer);
+
+            var orders = await AdminApp.Database.GetCustomerOrdersAsync(customer.Id);
+
+            ListCustomerOrders(orders);
+
+            MessageHelper.ShowSuccess("Ordrar listade!");
+
+            if (!InputHelper.GetConfirmation("Vill du även se ordervaror?")) return;
+
+            var choice = InputHelper.GetIntInput("Välj order (Ej order-ID)") - 1;
+            Console.WriteLine();
+
+            if (choice >= 0 && choice < orders.Count)
+            {
+                var order = orders[choice];
+
+                var orderItems = order.OrderItems;
+
+                ListOrderItems(orderItems);
+
+                MessageHelper.ShowSuccess("Produkter listade!");
+                return;
+            }
+            MessageHelper.ShowError("Ogiltigt val!");
+            return;
+        }
+        catch (Exception e)
+        {
+            MessageHelper.ShowError($"Något gick fel: {e.Message}");
+        }
+    }
+
+    private void DisplaySelectedCustomer(Models.Customer customer)
+    {
+        Console.WriteLine($"""
+                ================ {customer.FirstName} {customer.LastName} ================
+                
+                Telefon:    {customer.Phone}
+                Melj:       {customer.Email}
+                Ålder:      {customer.Age}
+                Aktiv:      {(customer.IsActive ? "Ja" : "Nej")}
+
+                {new string('─', 50)}
+
+                Land:       {customer.Address!.Country!.Name}
+                Län:        {customer.Address.Region}
+                Stad:       {customer.Address.City}
+                Postkod:    {customer.Address.PostalCode}
+                Gata:       {customer.Address.Street}
+                Husnummer:  {customer.Address.HouseNumber}
+                
+                """);
+    }
+
+    private void ListOrderItems(List<Models.OrderItem> orderItems)
+    {
+        foreach (var item in orderItems)
+        {
+            Console.WriteLine($"""
+                Produkt:        {item.ProductName}
+                Mängd:          {item.Quantity}
+                Styckpris:      {item.UnitPrice:C}
+
+                Totalt pris:    {item.Subtotal:C}
+
+                """);
+        }
+    }
+
+    private void ListCustomerOrders(List<Models.Order> orders)
+    {
+        for (int i = 0; i < orders.Count; i++)
+        {
+            var order = orders[i];
+
+            Console.WriteLine($"""
+                {i + 1}.
+                Order-ID:            {order.Id}
+                Orderdatum:         {order.OrderDate:f}
+                Betalningsmetod:    {order.PaymentMethod?.Name ?? "Okänd"}
+                Transaktionsavgift: {order.PaymentMethodCost:C}
+                Fraktmetod:         {order.ShippingMethod?.Name ?? "Okänd"}
+                Fraktkostnad:       {order.ShippingCost:C}
+
+                Total kostnad:      {order.TotalAmount:C}
+
+                """);
+        }
+    }
+
+    private void ListAllCustomers(List<Models.Customer> customers)
+    {
+        for (int i = 0; i < customers.Count; i++)
+        {
+            var customer = customers[i];
+
+            Console.WriteLine($"""
+                ================ {customer.FirstName} {customer.LastName} ================
+                
+                {i + 1}.
+
+                Telefon:    {customer.Phone}
+                Melj:       {customer.Email}
+                Ålder:      {customer.Age}
+                Aktiv:      {(customer.IsActive ? "Ja" : "Nej")}
+
+                {new string('─', 50)}
+
+                Land:       {customer.Address!.Country!.Name}
+                Län:        {customer.Address.Region}
+                Stad:       {customer.Address.City}
+                Postkod:    {customer.Address.PostalCode}
+                Gata:       {customer.Address.Street}
+                Husnummer:  {customer.Address.HouseNumber}
+                
+                """);
+        }
+        Console.WriteLine(new string('─', 50));
+    }
+
+    private async Task EditOrRemoveCustomerAsync()
+    {
+        try
+        {
+            var customers = await AdminApp.Database.GetAllCustomersAsync();
 
             Console.Clear();
             Console.WriteLine();
@@ -73,8 +215,8 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                 Console.WriteLine($"""
                     Vill du [T]a bort eller [R]edigera kunden ({selectedCustomer.FirstName} {selectedCustomer.LastName})?
 
-                    OBS! Går endast att ta bort om kunden om de inte har ordrar!
-                    Vill du 'ta bort' en kund, fundera istället på en 'soft-delete' genom att sätta kunden till inaktiv!
+                    OBS! Går endast att ta bort kunden om de inte har ordrar!
+                    Vill du 'ta bort' en kund, fundera istället på en 'soft-delete' genom att sätta kunden till inaktiv i redigeringsläget!
 
                     Q för att avbryta.
 
@@ -87,7 +229,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                     case ConsoleKey.Q:
                         return;
                     case ConsoleKey.T:
-                        await AdminApp.Database.RemoveCustomerForAdminAsync(selectedCustomer);
+                        await AdminApp.Database.RemoveCustomerAsync(selectedCustomer);
                         MessageHelper.ShowSuccess($"""
                     Kunden: {selectedCustomer.FirstName} {selectedCustomer.LastName}
 
@@ -202,14 +344,14 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
 
         customer.Address = null;
 
-        await AdminApp.Database.UpdateCustomerForAdminAsync(customer);
+        await AdminApp.Database.UpdateCustomerAsync(customer);
 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
 
     private async Task EditCustomerAddress(int customerId)
     {
-        var address = await AdminApp.Database.GetCustomerAddressForAdminAsync(customerId);
+        var address = await AdminApp.Database.GetCustomerAddressAsync(customerId);
 
         while (true)
         {
@@ -242,6 +384,9 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                 case ConsoleKey.C:
                     address.HouseNumber = InputHelper.GetTextInput("Nytt husnummer");
                     break;
+                case ConsoleKey.R:
+                    address.Region = InputHelper.GetTextInput("Nytt län");
+                    break;
             }
         }
     }
@@ -252,7 +397,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
 
         address.Customer = null;
 
-        await AdminApp.Database.UpdateCustomerAddressForAdminAsync(address);
+        await AdminApp.Database.UpdateCustomerAddressAsync(address);
 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
@@ -265,6 +410,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
 
         Console.WriteLine($"""
             Tryck på en av följande knappar för att ändra:
+            [R] Län
             [N] Stad
             [K] Postkod
             [D] Gata
@@ -274,6 +420,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
 
             {new string('─', 50)}
 
+            Län:        {address.Region}
             Stad:       {address.City}
             Postkod:    {address.PostalCode}
             Gata:       {address.Street}
@@ -282,33 +429,6 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
             {new string('─', 50)}
 
             """);
-    }
-
-    private async Task ListAllCustomersAsync()
-    {
-        var customers = await AdminApp.Database.GetAllCustomersForAdminAsync();
-
-        foreach (var customer in customers)
-        {
-            Console.WriteLine($"""
-                {new string('─', 50)}
-
-                Namn:       {customer.FirstName} {customer.LastName}
-                Telefon:    {customer.Phone}
-                Melj:       {customer.Email}
-                Ålder:      {customer.Age}
-                Aktiv:      {(customer.IsActive ? "Ja" : "Nej")}
-
-                ============== Adress ==============
-
-                Land:       {customer.Address!.Country!.Name}
-                Stad:       {customer.Address.City}
-                Postkod:    {customer.Address.PostalCode}
-                Gata:       {customer.Address.Street}
-                Husnummer:  {customer.Address.HouseNumber}
-                
-                """);
-        }
     }
 
     private async Task AddCustomerAsync()
@@ -328,6 +448,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
             if (!InputHelper.GetConfirmation($"""
                 En ny kund {customer.FirstName} med addressen:
 
+                {customer.Address.Region}
                 {customer.Address.City}
                 {customer.Address.PostalCode}
                 {customer.Address.Street}
@@ -351,6 +472,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
 
     private Models.Address GetNewAddress()
     {
+        var region = InputHelper.GetTextInput("Ange län");
         var city = InputHelper.GetTextInput("Ange stad");
         var postalCode = InputHelper.GetIntInput("Ange postkod");
         var street = InputHelper.GetTextInput("Ange gata");
@@ -359,6 +481,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
         var address = new Models.Address()
         {
             CountryId = 1,
+            Region = region,
             City = city,
             PostalCode = postalCode,
             Street = street,

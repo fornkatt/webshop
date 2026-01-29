@@ -1,6 +1,4 @@
-﻿using Webshop.Services;
-
-namespace Webshop.Helpers;
+﻿namespace Webshop.Helpers;
 
 internal static class AdminHelper
 {

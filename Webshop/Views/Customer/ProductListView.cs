@@ -1,4 +1,4 @@
-﻿namespace Webshop.Views;
+﻿namespace Webshop.Views.Customer;
 
 internal class ProductListView(string headerText, List<Models.Product> products, WebshopApplication app) : MenuBase<ProductListView.MenuItems>(headerText, app)
 {

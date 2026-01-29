@@ -1,6 +1,6 @@
 ﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Admin.Management;
 
 internal class AdminSuppliersView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminSuppliersView.MenuItems>(headerText, adminApp)
@@ -37,7 +37,7 @@ internal class AdminSuppliersView(string headerText, AdminApplication adminApp) 
 
                 """);
 
-            var suppliers = await AdminApp.Database.GetAllSuppliersForAdminAsync();
+            var suppliers = await AdminApp.Database.GetAllSuppliersAsync();
 
             for (int i = 0; i < suppliers.Count; i++)
             {
@@ -77,7 +77,7 @@ internal class AdminSuppliersView(string headerText, AdminApplication adminApp) 
                     case ConsoleKey.Q:
                         return;
                     case ConsoleKey.T:
-                        await AdminApp.Database.RemoveSupplierForAdminAsync(selectedSupplier);
+                        await AdminApp.Database.RemoveSupplierAsync(selectedSupplier);
 
                         MessageHelper.ShowSuccess($"""
                         Leverantören: {selectedSupplier.Name}
@@ -130,7 +130,7 @@ internal class AdminSuppliersView(string headerText, AdminApplication adminApp) 
     {
         Console.Clear();
 
-        await AdminApp.Database.UpdateSupplierForAdminAsync(supplier);
+        await AdminApp.Database.UpdateSupplierAsync(supplier);
 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
@@ -173,7 +173,7 @@ internal class AdminSuppliersView(string headerText, AdminApplication adminApp) 
 
             MessageHelper.ShowHeader("Lägg till leverantör");
 
-            var suppliers = await AdminApp.Database.GetAllSuppliersForAdminAsync();
+            var suppliers = await AdminApp.Database.GetAllSuppliersAsync();
 
             foreach (var supplier in suppliers)
             {
@@ -194,7 +194,7 @@ internal class AdminSuppliersView(string headerText, AdminApplication adminApp) 
 
             if (InputHelper.GetConfirmation($"Ny leverantör [{newSupplier.Name}] kommer att läggas till. Är detta okej?"))
             {
-                await AdminApp.Database.AddSupplierForAdminAsync(newSupplier);
+                await AdminApp.Database.AddSupplierAsync(newSupplier);
 
                 MessageHelper.ShowSuccess($"Leverantören [{newSupplier.Name}] har lagts till!");
                 return;

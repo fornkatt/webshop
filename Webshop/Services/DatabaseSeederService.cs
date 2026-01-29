@@ -3,7 +3,7 @@ using Webshop.Models;
 
 namespace Webshop.Services;
 
-internal class DatabaseSeederService
+internal sealed class DatabaseSeederService
 {
     public async Task SeedDatabaseAsync()
     {
@@ -111,6 +111,7 @@ internal class DatabaseSeederService
         if (!db.Customers.Any())
         {
             var swedishCities = new[] { "Stockholm", "Göteborg", "Malmö", "Uppsala", "Västerås", "Örebro", "Linköping", "Helsingborg", "Jönköping", "Norrköping" };
+            var swedishRegions = new[] { "Stockholms län", "Västra Götalands län", "Skåne län", "Uppsala län", "Västmanlands län", "Örebro län", "Östergötlands län", "Hallands län", "Jönköpings län" };
             var streets = new[] { "Storgatan", "Kungsgatan", "Drottninggatan", "Vasagatan", "Sveavägen", "Birger Jarlsgatan", "Hamngatan", "Östergatan", "Norra vägen", "Södra vägen" };
 
             var users = new List<(string FirstName, string LastName, string Username, int Age)>
@@ -147,6 +148,7 @@ internal class DatabaseSeederService
                     Address = new Address
                     {
                         CountryId = 1,
+                        Region = swedishRegions[random.Next(swedishRegions.Length)],
                         City = swedishCities[random.Next(swedishCities.Length)],
                         PostalCode = random.Next(10000, 99999),
                         Street = streets[random.Next(streets.Length)],
@@ -185,6 +187,7 @@ internal class DatabaseSeederService
                         ShippingAddressId = customer.Address!.Id,
                         ShippingMethodId = shippingMethod.Id,
                         ShippingCost = shippingMethod.Price,
+                        PaymentMethodCost = paymentMethod.TransactionFee,
                         PaymentMethodId = paymentMethod.Id,
                         PaymentStatus = PaymentStatus.Completed,
                         OrderItems = new List<OrderItem>()

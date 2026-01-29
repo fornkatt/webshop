@@ -1,6 +1,6 @@
 ﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Customer;
 
 // Does not extend MenuBase because it makes blocking I/O calls to handle user login.
 // Displaying PersistentMenuItems and handling menu navigation is pointless here.

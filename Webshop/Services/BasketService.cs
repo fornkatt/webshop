@@ -2,7 +2,7 @@
 
 namespace Webshop.Services;
 
-internal class BasketService
+internal sealed class BasketService
 {
     private readonly Dictionary<int, (Product Product, int Quantity)> _basketItems = [];
 
@@ -28,7 +28,6 @@ internal class BasketService
     {
         if (_basketItems.ContainsKey(product.Id))
         {
-            var item = _basketItems[product.Id];
             _basketItems.Remove(product.Id);
         }
     }

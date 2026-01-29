@@ -1,6 +1,6 @@
 ﻿using Webshop.Helpers;
 
-namespace Webshop.Views;
+namespace Webshop.Views.Admin.Management;
 
 internal class AdminCategoriesView(string headerText, AdminApplication adminApp) :
     AdminMenuBase<AdminCategoriesView.MenuItems>(headerText, adminApp)
@@ -35,7 +35,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
             Console.WriteLine("Nuvarande kategorier:");
             Console.WriteLine();
 
-            var categories = await AdminApp.Database.GetAllCategoriesForAdminAsync();
+            var categories = await AdminApp.Database.GetAllCategoriesAsync();
 
             for (int i = 0; i < categories.Count; i++)
             {
@@ -66,7 +66,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
                     Q för att avbryta.
 
                     OBS! Går endast att ta bort om kategorin inte innehåller produkter.
-                    Vill du 'ta bort' en kategori, fundera istället på en 'soft-delete' genom att sätta kategorin till inaktiv!
+                    Vill du 'ta bort' en kategori, fundera istället på en 'soft-delete' genom att sätta kategorin till inaktiv i redigeringsläget!
 
                     """);
 
@@ -77,7 +77,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
                     case ConsoleKey.Q:
                         return;
                     case ConsoleKey.T:
-                        await AdminApp.Database.RemoveCategoryForAdminAsync(selectedCategory);
+                        await AdminApp.Database.RemoveCategoryAsync(selectedCategory);
 
                         MessageHelper.ShowSuccess($"""
                         Kategorin: {selectedCategory.Name}
@@ -133,7 +133,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
     {
         Console.Clear();
 
-        await AdminApp.Database.UpdateCategoryForAdminAsync(category);
+        await AdminApp.Database.UpdateCategoryAsync(category);
 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
@@ -177,7 +177,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
 
                 """);
 
-            var categories = await AdminApp.Database.GetAllCategoriesForAdminAsync();
+            var categories = await AdminApp.Database.GetAllCategoriesAsync();
 
             foreach (var item in categories)
             {
@@ -200,7 +200,7 @@ internal class AdminCategoriesView(string headerText, AdminApplication adminApp)
 
             if (InputHelper.GetConfirmation($"Ny kategori [{category.Name}] kommer att läggas till. Är detta okej?"))
             {
-                await AdminApp.Database.AddCategoryForAdminAsync(category);
+                await AdminApp.Database.AddCategoryAsync(category);
 
                 MessageHelper.ShowSuccess($"Kategorin [{category.Name}] har lagts till!");
                 return;

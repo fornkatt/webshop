@@ -1,10 +1,8 @@
-﻿using Webshop.Helpers;
+﻿namespace Webshop.Services;
 
-namespace Webshop.Services;
-
-internal class CheckoutService(WebshopApplication app)
+internal sealed class CheckoutService(WebshopApplication app)
 {
-    protected WebshopApplication App { get; } = app;
+    private WebshopApplication App { get; } = app;
 
     internal async Task<bool> CompleteOrder(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
     {
@@ -30,6 +28,7 @@ internal class CheckoutService(WebshopApplication app)
                 ShippingAddressId = App.CurrentUser.Address!.Id,
                 ShippingMethodId = shippingMethod.Id,
                 ShippingCost = shippingMethod.Price,
+                PaymentMethodCost = paymentMethod.TransactionFee,
                 PaymentMethodId = paymentMethod.Id,
                 PaymentStatus = Models.PaymentStatus.Pending,
                 OrderItems = []
@@ -64,7 +63,7 @@ internal class CheckoutService(WebshopApplication app)
         }
         catch (Exception e)
         {
-            MessageHelper.ShowError($"""
+            Helpers.MessageHelper.ShowError($"""
                 Ett fel uppstod vid beställningen: {e.Message}
                 """);
             return false;
@@ -81,7 +80,7 @@ internal class CheckoutService(WebshopApplication app)
 
             for (int i = 0; i < items.Count; i++)
             {
-                Console.WriteLine($"Metod: {displayFormatter(items[i])}");
+                Console.WriteLine($"{i + 1}: {displayFormatter(items[i])}");
                 Console.WriteLine();
             }
 
@@ -122,37 +121,10 @@ internal class CheckoutService(WebshopApplication app)
             shippingMethods,
             "Välj fraktalternativ. Q för att avsluta.",
             sm => $"""
-                                {sm.Name} - {sm.Price:C}
-                                {sm.Description}
-                Leveranstid:    {sm.EstimatedDaysMin}-{sm.EstimatedDaysMax} dagar
+                {sm.Name} - {sm.Price:C}
+                {sm.Description}
+                Leveranstid: {sm.EstimatedDaysMin}-{sm.EstimatedDaysMax} dagar
                 """
         );
-    }
-
-    internal void SetCustomerAddress(string city,
-        int postalCode,
-        string street,
-        string houseNumber,
-        string firstName,
-        string lastName,
-        string phone,
-        string email)
-    {
-        var address = new Models.Address()
-        {
-            CustomerId = App.CurrentUser.Id,
-            CountryId = 1,
-            City = city,
-            PostalCode = postalCode,
-            Street = street,
-            HouseNumber = houseNumber,
-        };
-
-        App.CurrentUser.Address = address;
-
-        App.CurrentUser.FirstName = firstName;
-        App.CurrentUser.LastName = lastName;
-        App.CurrentUser.Phone = phone;
-        App.CurrentUser.Email = email;
     }
 }
