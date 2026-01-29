@@ -7,7 +7,7 @@ namespace Webshop.Views.Customer;
 // which are blocking and don't need a menu to navigate.
 internal class CreateAccountView(WebshopApplication app)
 {
-    private WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
     private readonly Services.CreateAccountService _createAccountService = new(app);
     private readonly CustomerRegistrationHelper _customerRegistrationHelper = new();
 
@@ -20,7 +20,7 @@ internal class CreateAccountView(WebshopApplication app)
             Console.Clear();
             MessageHelper.ShowHeader("Skapa konto");
 
-            if (App.CurrentUser.Id != 0)
+            if (_app.CurrentUser.Id != 0)
             {
                 await ConvertGuestAccountAsync();
             }
@@ -45,9 +45,9 @@ internal class CreateAccountView(WebshopApplication app)
 
         if (await _createAccountService.SetUsernameAndPassword(username, password))
         {
-            await App.Database.UpdateCustomerAsync(App.CurrentUser);
-            await App.MongoLogService.LogActionAsync("Nytt konto", App.CurrentUser.Id, 
-                App.CurrentUser.FirstName, App.CurrentUser.Email, "Konverterat från gästkonto");
+            await _app.Database.UpdateCustomerAsync(_app.CurrentUser);
+            await _app.MongoLogService.LogActionAsync("Nytt konto", _app.CurrentUser.Id, 
+                _app.CurrentUser.FirstName, _app.CurrentUser.Email, "Konverterat från gästkonto");
 
             MessageHelper.ShowSuccess("Konto skapat!");
             return;
@@ -62,9 +62,9 @@ internal class CreateAccountView(WebshopApplication app)
 
         if (await _createAccountService.SetUsernameAndPassword(username, password))
         {
-            await App.Database.AddNewCustomerAsync(App.CurrentUser);
-            await App.MongoLogService.LogActionAsync("Nytt konto", App.CurrentUser.Id,
-                App.CurrentUser.FirstName, App.CurrentUser.Email, "Ny användare");
+            await _app.Database.AddNewCustomerAsync(_app.CurrentUser);
+            await _app.MongoLogService.LogActionAsync("Nytt konto", _app.CurrentUser.Id,
+                _app.CurrentUser.FirstName, _app.CurrentUser.Email, "Ny användare");
 
             MessageHelper.ShowSuccess("Konto skapat!");
             return;

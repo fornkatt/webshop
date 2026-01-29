@@ -4,7 +4,7 @@ using Webshop.Models;
 
 namespace Webshop.Services;
 
-internal class MongoLogService
+internal sealed class MongoLogService
 {
     private readonly IMongoCollection<ActionLog>? _logsCollection;
 

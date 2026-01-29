@@ -11,12 +11,12 @@ internal sealed class AdminDatabaseService : DatabaseServiceBase
 
         var results = await db.OrderItems
             .Include(oi => oi.Product)
-                .ThenInclude(p => p.Supplier)
+                .ThenInclude(p => p!.Supplier)
             .Include(oi => oi.Order)
             .GroupBy(oi => new
             {
-                SupplierId = oi.Product.SupplierId,
-                SupplierName = oi.Product.Supplier.Name
+                SupplierId = oi.Product!.SupplierId,
+                SupplierName = oi.Product.Supplier!.Name
             })
             .Select(group => new
             {

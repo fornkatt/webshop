@@ -7,10 +7,10 @@ namespace Webshop.Views.Customer;
 // so the user can't navigate the menu items.
 internal class CheckoutView(WebshopApplication app)
 {
+    private readonly WebshopApplication _app = app;
     private readonly Services.CheckoutService _checkoutService = new(app);
     private readonly Services.CreateAccountService _createAccountService = new(app);
     private readonly CustomerRegistrationHelper _customerRegistrationHelper = new();
-    private WebshopApplication App { get; } = app;
 
     internal async Task ActivateAsync()
     {
@@ -18,7 +18,7 @@ internal class CheckoutView(WebshopApplication app)
         {
             Console.CursorVisible = true;
 
-            if (App.CurrentUser.Address != null)
+            if (_app.CurrentUser.Address != null)
             {
                 await ShowCurrentAddressAsync();
 
@@ -61,9 +61,9 @@ internal class CheckoutView(WebshopApplication app)
             Vi hoppas du är nöjd med din upplevelse hos oss!
             """);
 
-                if (App.CurrentUser.IsGuest && InputHelper.GetConfirmation("Vill du skapa ett konto?"))
+                if (_app.CurrentUser.IsGuest && InputHelper.GetConfirmation("Vill du skapa ett konto?"))
                 {
-                    await new CreateAccountView(App).ActivateAsync();
+                    await new CreateAccountView(_app).ActivateAsync();
                 }
             }
             else
@@ -87,22 +87,22 @@ internal class CheckoutView(WebshopApplication app)
 
     private async Task RenderOrderAsync(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
     {
-        string countryName = await App.Database.GetCountryName(App.CurrentUser.Address!.CountryId);
+        string countryName = await _app.Database.GetCountryName(_app.CurrentUser.Address!.CountryId);
 
         Console.Clear();
         Console.WriteLine($"""
             Dina uppgifter är:
 
-            Namn:               {App.CurrentUser.FirstName} {App.CurrentUser.LastName}
-            Mejl:               {App.CurrentUser.Email}
-            Telefon             {App.CurrentUser.Phone}
+            Namn:               {_app.CurrentUser.FirstName} {_app.CurrentUser.LastName}
+            Mejl:               {_app.CurrentUser.Email}
+            Telefon             {_app.CurrentUser.Phone}
 
             Land:               {countryName}
-            Stad:               {App.CurrentUser.Address.City}
-            Län:                {App.CurrentUser.Address.Region}
-            Postkod:            {App.CurrentUser.Address.PostalCode}
-            Gata:               {App.CurrentUser.Address.Street}
-            Husnummer:          {App.CurrentUser.Address.HouseNumber}
+            Stad:               {_app.CurrentUser.Address.City}
+            Län:                {_app.CurrentUser.Address.Region}
+            Postkod:            {_app.CurrentUser.Address.PostalCode}
+            Gata:               {_app.CurrentUser.Address.Street}
+            Husnummer:          {_app.CurrentUser.Address.HouseNumber}
 
             Ditt valda leveransalternativ är:
 
@@ -118,11 +118,11 @@ internal class CheckoutView(WebshopApplication app)
 
             """);
 
-        App.Basket.ListBasketItems();
+        _app.Basket.ListBasketItems();
 
         Console.WriteLine($"""
-            Kostnad:            {App.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
-            Varav moms:         {App.Basket.GetTotalTax()}
+            Kostnad:            {_app.Basket.GetTotal() + paymentMethod.TransactionFee + shippingMethod.Price}
+            Varav moms:         {_app.Basket.GetTotalTax()}
             """);
     }
 
@@ -130,9 +130,9 @@ internal class CheckoutView(WebshopApplication app)
     {
         Console.Clear();
 
-        string countryName = await App.Database.GetCountryName(App.CurrentUser.Address!.CountryId);
+        string countryName = await _app.Database.GetCountryName(_app.CurrentUser.Address!.CountryId);
 
-        var address = App.CurrentUser.Address;
+        var address = _app.CurrentUser.Address;
 
         Console.WriteLine($"""
                 Din sparade adress och kontaktuppgifter är:
@@ -144,8 +144,8 @@ internal class CheckoutView(WebshopApplication app)
                 Gata:       {address.Street}
                 Husnummer:  {address.HouseNumber}
 
-                Telefon:    {App.CurrentUser.Phone}
-                Mejl:       {App.CurrentUser.Email}
+                Telefon:    {_app.CurrentUser.Phone}
+                Mejl:       {_app.CurrentUser.Email}
                 """);
     }
 }
