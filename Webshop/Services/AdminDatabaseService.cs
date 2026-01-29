@@ -5,6 +5,95 @@ namespace Webshop.Services;
 
 internal sealed class AdminDatabaseService : DatabaseServiceBase
 {
+    internal async Task<List<(string SupplierName, decimal TotalProfits)>> GetProfitsPerSupplierAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        var results = await db.OrderItems
+            .Include(oi => oi.Product)
+                .ThenInclude(p => p.Supplier)
+            .Include(oi => oi.Order)
+            .GroupBy(oi => new
+            {
+                SupplierId = oi.Product.SupplierId,
+                SupplierName = oi.Product.Supplier.Name
+            })
+            .Select(group => new
+            {
+                SupplierName = group.Key.SupplierName ?? "Okänd",
+                TotalProfit = group.Sum(oi => (oi.Quantity * oi.UnitPrice / oi.Order!.TotalAmount) * oi.Order.TotalAmount)
+            })
+            .OrderByDescending(x => x.TotalProfit)
+            .ToListAsync();
+
+        return results
+            .Select(x => (x.SupplierName, x.TotalProfit))
+            .ToList();
+    }
+    internal async Task<List<(string CategoryName, decimal TotalProfits)>> GetProfitsPerCategoryAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        var results = await db.OrderItems
+            .Include(oi => oi.Product)
+                .ThenInclude(p => p!.Category)
+            .Include(oi => oi.Order)
+            .GroupBy(oi => new
+            {
+                CategoryId = oi.Product!.CategoryId,
+                CategoryName = oi.Product.Category!.Name
+            })
+            .Select(group => new
+            {
+                CategoryName = group.Key.CategoryName ?? "Okänd",
+                TotalProfit = group.Sum(oi => (oi.Quantity * oi.UnitPrice / oi.Order!.TotalAmount) * oi.Order.TotalAmount)
+            })
+            .OrderByDescending(x => x.TotalProfit)
+            .ToListAsync();
+
+        return results
+            .Select(x => (x.CategoryName, x.TotalProfit))
+            .ToList();
+    }
+    internal async Task<decimal> GetYearlyProfitsAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        var thisYear = DateTime.Today.Year;
+
+        return await db.Orders
+            .Where(o => o.OrderDate.Year == thisYear)
+            .SumAsync(o => o.TotalAmount);
+    }
+    internal async Task<decimal> GetMonthlyProfitsAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        var thisYear = DateTime.Today.Year;
+        var thisMonth = DateTime.Today.Month;
+
+        return await db.Orders
+            .Where(o => o.OrderDate.Month == thisMonth && o.OrderDate.Year == thisYear)
+            .SumAsync(o => o.TotalAmount);
+    }
+    internal async Task<decimal> GetDailyProfitsAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        var today = DateTime.Today;
+
+
+        return await db.Orders
+            .Where(o => o.OrderDate.Date == today)
+            .SumAsync(o => o.TotalAmount);
+    }
+    internal async Task<decimal> GetAllTimeProfitsAsync()
+    {
+        using var db = new WebshopDbContext();
+
+        return await db.Orders
+            .SumAsync(o => o.TotalAmount);
+    }
     internal async Task<List<(string SupplierName, int ProductsSold)>> GetProductsSoldPerSupplierAsync()
     {
         using var db = new WebshopDbContext();

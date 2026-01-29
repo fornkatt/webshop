@@ -1,6 +1,4 @@
-﻿using Webshop.Helpers;
-
-namespace Webshop.Views.Admin.Statistics;
+﻿namespace Webshop.Views.Admin.Statistics;
 
 internal class AdminStatisticsView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminStatisticsView.MenuItems>(headerText, adminApp)

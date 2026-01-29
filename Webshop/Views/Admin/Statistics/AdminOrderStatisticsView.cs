@@ -1,5 +1,4 @@
 using Webshop.Helpers;
-using Webshop.Models;
 
 namespace Webshop.Views.Admin.Statistics;
 
@@ -88,8 +87,10 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         {
             if (currentCategory != CategoryName)
             {
-                Console.WriteLine($"=== {CategoryName.ToUpper()} ===");
-                Console.WriteLine();
+                Console.WriteLine($"""
+                    === {CategoryName.ToUpper()} ===
+
+                    """);
                 currentCategory = CategoryName;
             }
 

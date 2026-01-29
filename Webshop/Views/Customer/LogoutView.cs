@@ -6,7 +6,7 @@
 // I opted for having it in Views because it handles I/O and displays information.
 internal class LogoutView(WebshopApplication app)
 {
-    protected WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
 
     internal async Task ActivateAsync()
     {
@@ -20,15 +20,15 @@ internal class LogoutView(WebshopApplication app)
 
             if (!Helpers.InputHelper.GetConfirmation("Är du säker på att du vill logga ut?")) return;
 
-            await App.MongoLogService.LogActionAsync("Kund utloggad", App.CurrentUser.Id, 
-                App.CurrentUser.FirstName, App.CurrentUser.Email);
+            await _app.MongoLogService.LogActionAsync("Kund utloggad", _app.CurrentUser.Id, 
+                _app.CurrentUser.FirstName, _app.CurrentUser.Email);
 
-            App.CurrentUser = new()
+            _app.CurrentUser = new()
             {
                 FirstName = "guestUser" + Random.Shared.Next(0, 10000000),
                 IsGuest = true
             };
-            await App.GoToMainMenuAsync();
+            await _app.GoToMainMenuAsync();
             return;
         }
         finally

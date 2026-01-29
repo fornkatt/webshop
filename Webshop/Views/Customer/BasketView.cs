@@ -79,7 +79,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
             Total kostnad:                  {App.Basket.GetTotal()}
             Varav moms:                     {App.Basket.GetTotalTax()}
 
-            Välj en produkt för att ändra! (Sida {_currentPage + 1}/{(basketItems.Count + ItemsPerPage - 1) / ItemsPerPage})
+            Välj en produkt för att ändra! (Sida {_currentPage + 1}/{(basketItems.Count + ItemsPerPage) / ItemsPerPage})
             """);
     }
 

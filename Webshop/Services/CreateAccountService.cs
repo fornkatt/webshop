@@ -2,15 +2,15 @@
 
 internal sealed class CreateAccountService(WebshopApplication app)
 {
-    private WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
     internal async Task<bool> SetUsernameAndPassword(string username, string password)
     {
         try
         {
-            App.CurrentUser.Username = username;
-            App.CurrentUser.Password = password;
-            App.CurrentUser.IsActive = true;
-            App.CurrentUser.IsGuest = false;
+            _app.CurrentUser.Username = username;
+            _app.CurrentUser.Password = password;
+            _app.CurrentUser.IsActive = true;
+            _app.CurrentUser.IsGuest = false;
 
             return true;
         }
@@ -34,7 +34,7 @@ internal sealed class CreateAccountService(WebshopApplication app)
     {
         var address = new Models.Address()
         {
-            CustomerId = App.CurrentUser.Id,
+            CustomerId = _app.CurrentUser.Id,
             CountryId = 1,
             Region = region,
             City = city,
@@ -43,12 +43,12 @@ internal sealed class CreateAccountService(WebshopApplication app)
             HouseNumber = houseNumber,
         };
 
-        App.CurrentUser.Address = address;
+        _app.CurrentUser.Address = address;
 
-        App.CurrentUser.FirstName = firstName;
-        App.CurrentUser.LastName = lastName;
-        App.CurrentUser.Age = age;
-        App.CurrentUser.Phone = phone;
-        App.CurrentUser.Email = email;
+        _app.CurrentUser.FirstName = firstName;
+        _app.CurrentUser.LastName = lastName;
+        _app.CurrentUser.Age = age;
+        _app.CurrentUser.Phone = phone;
+        _app.CurrentUser.Email = email;
     }
 }

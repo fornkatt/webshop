@@ -6,7 +6,7 @@
 // It is a view all the same because it displays information and handles I/O.
 internal class FreeSearchView(WebshopApplication app)
 {
-    protected WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
 
     internal async Task ActivateAsync()
     {
@@ -19,7 +19,7 @@ internal class FreeSearchView(WebshopApplication app)
                 var input = GetSearchInput();
                 if (input == null) return;
 
-                var searchedItems = await App.Database.GetSearchedItems(input);
+                var searchedItems = await _app.Database.GetSearchedItems(input);
 
                 if (!HandleEmptyResults(searchedItems))
                 {
@@ -116,7 +116,7 @@ internal class FreeSearchView(WebshopApplication app)
 
     private async Task NavigateToProduct(Models.Product product)
     {
-        await new ProductView(product.Name!, product, App).ActivateAsync();
+        await new ProductView(product.Name!, product, _app).ActivateAsync();
     }
 
     private void DisplaySearchResults(List<Models.Product> searchedItems)

@@ -5,7 +5,7 @@ namespace Webshop.Views.Customer;
 
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
-    protected WebshopApplication App { get; } = app;
+    private protected WebshopApplication App { get; } = app;
     private protected string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
     private bool _shouldExit = false;

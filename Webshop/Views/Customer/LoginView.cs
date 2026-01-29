@@ -1,13 +1,11 @@
-﻿using Webshop.Helpers;
-
-namespace Webshop.Views.Customer;
+﻿namespace Webshop.Views.Customer;
 
 // Does not extend MenuBase because it makes blocking I/O calls to handle user login.
 // Displaying PersistentMenuItems and handling menu navigation is pointless here.
 // I still put it in Views because it displays information and handles I/O and has minimal business logic.
 internal class LoginView(WebshopApplication app)
 {
-    protected WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
 
     internal async Task ActivateAsync()
     {
@@ -15,7 +13,7 @@ internal class LoginView(WebshopApplication app)
         {
             Console.CursorVisible = true;
 
-            List<Models.Customer> customers = await App.Database.GetAllCustomersAsync();
+            List<Models.Customer> customers = await _app.Database.GetAllCustomersAsync();
 
             var (adminUsername, adminPassword) = Helpers.ConfigHelper.GetAdminCredentials();
 
@@ -51,7 +49,7 @@ internal class LoginView(WebshopApplication app)
 
                 if (username == adminUsername && password == adminPassword)
                 {
-                    await App.MongoLogService.LogActionAsync("Admin inloggning", null, "admin");
+                    await _app.MongoLogService.LogActionAsync("Admin inloggning", null, "admin");
                     var adminApp = new AdminApplication();
                     await adminApp.GoToAdminViewAsync();
                     return;
@@ -70,14 +68,14 @@ internal class LoginView(WebshopApplication app)
                     continue;
                 }
 
-                App.CurrentUser = customer;
-                await App.MongoLogService.LogActionAsync("Inloggning", App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
+                _app.CurrentUser = customer;
+                await _app.MongoLogService.LogActionAsync("Inloggning", _app.CurrentUser.Id, _app.CurrentUser.FirstName, _app.CurrentUser.Email);
                 return;
             }
         }
         catch (Exception e)
         {
-            MessageHelper.ShowError($"Något gick fel: { e.Message}.");
+            Helpers.MessageHelper.ShowError($"Något gick fel: { e.Message}.");
         }
         finally
         {

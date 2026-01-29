@@ -6,8 +6,8 @@ namespace Webshop.Views.Admin;
 internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplication adminApp) : IMenu
     where TMenuItems : Enum
 {
-    protected AdminApplication AdminApp { get; } = adminApp;
-    protected string HeaderText { get; set; } = headerText;
+    private protected AdminApplication AdminApp { get; } = adminApp;
+    private protected string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
     private bool _shouldExit = false;
 

@@ -7,9 +7,9 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
     {
-        { MenuItems.TotalRevenue, "Total intäkt" },
-        { MenuItems.RevenuePerCategory, "Intäkt per kategori" },
-        { MenuItems.RevenuePerSupplier, "Intäkt per leverantör" }
+        { MenuItems.TotalRevenue, "Totala intäkter" },
+        { MenuItems.RevenuePerCategory, "Intäkter per kategori" },
+        { MenuItems.RevenuePerSupplier, "Intäkter per leverantör" }
     };
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
@@ -30,19 +30,64 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
 
     private async Task ShowTotalRevenue()
     {
-        // ToDo
+        Console.Clear();
+        MessageHelper.ShowHeader("Totala intäkter");
+
+        var totalAllTimeRevenue = await AdminApp.Database.GetAllTimeProfitsAsync();
+        var totalDailyProfits = await AdminApp.Database.GetDailyProfitsAsync();
+        var totalMonthlyProfits = await AdminApp.Database.GetMonthlyProfitsAsync();
+        var totalYearlyProfits = await AdminApp.Database.GetYearlyProfitsAsync();
+
+        Console.WriteLine($"""
+            Totalt sedan start:     {totalAllTimeRevenue:C}
+
+            Totalt idag:            {totalDailyProfits:C}
+
+            Totalt denna måndad:    {totalMonthlyProfits:C}
+
+            Total i år:             {totalYearlyProfits:C}
+            """);
+
         MessageHelper.ShowSuccess("Klar!");
     }
 
     private async Task ShowRevenuePerCategory()
     {
-        // ToDo
+        Console.Clear();
+        MessageHelper.ShowHeader("Intäkter per kategori");
+
+        var profitsPerCategory = await AdminApp.Database.GetProfitsPerCategoryAsync();
+
+        foreach (var (CategoryName, TotalProfits) in profitsPerCategory)
+        {
+            Console.WriteLine($"""
+                === {CategoryName.ToUpper()} ===
+
+                {TotalProfits:C}
+
+                """);
+        }
+
         MessageHelper.ShowSuccess("Klar!");
     }
 
     private async Task ShowRevenuePerSupplier()
     {
-        // ToDo
+        Console.Clear();
+        MessageHelper.ShowHeader("Intäkter per leverantör");
+
+        var profitsPerSupplier = await AdminApp.Database.GetProfitsPerSupplierAsync();
+
+        foreach (var (SupplierName, TotalProfits) in profitsPerSupplier)
+        {
+            Console.WriteLine($"""
+                === {SupplierName.ToUpper()} ===
+
+                {TotalProfits:C}
+
+                """);
+        }
+
         MessageHelper.ShowSuccess("Klar!");
     }
 

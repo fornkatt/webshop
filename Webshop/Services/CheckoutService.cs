@@ -2,30 +2,30 @@
 
 internal sealed class CheckoutService(WebshopApplication app)
 {
-    private WebshopApplication App { get; } = app;
+    private readonly WebshopApplication _app = app;
 
     internal async Task<bool> CompleteOrder(Models.ShippingMethod shippingMethod, Models.PaymentMethod paymentMethod)
     {
         try
         {
-            if (App.CurrentUser.Id == 0)
+            if (_app.CurrentUser.Id == 0)
             {
-                await App.Database.AddNewCustomerAsync(App.CurrentUser);
+                await _app.Database.AddNewCustomerAsync(_app.CurrentUser);
             }
 
-            var basketItems = App.Basket.GetItems();
+            var basketItems = _app.Basket.GetItems();
 
-            if (App.CurrentUser.Address!.Id == 0)
+            if (_app.CurrentUser.Address!.Id == 0)
             {
-                await App.Database.AddNewAddressAsync(App.CurrentUser.Address);
+                await _app.Database.AddNewAddressAsync(_app.CurrentUser.Address);
             }
 
             var order = new Models.Order
             {
-                CustomerId = App.CurrentUser.Id,
+                CustomerId = _app.CurrentUser.Id,
                 OrderDate = DateTime.Now,
                 Status = Models.OrderStatus.Pending,
-                ShippingAddressId = App.CurrentUser.Address!.Id,
+                ShippingAddressId = _app.CurrentUser.Address!.Id,
                 ShippingMethodId = shippingMethod.Id,
                 ShippingCost = shippingMethod.Price,
                 PaymentMethodCost = paymentMethod.TransactionFee,
@@ -55,9 +55,9 @@ internal sealed class CheckoutService(WebshopApplication app)
                 + shippingMethod.Price 
                 + (paymentMethod.TransactionFee);
 
-            await App.Database.AddNewOrderAsync(order);
+            await _app.Database.AddNewOrderAsync(order);
 
-            App.Basket.Clear();
+            _app.Basket.Clear();
 
             return true;
         }
@@ -100,7 +100,7 @@ internal sealed class CheckoutService(WebshopApplication app)
 
     internal async Task<Models.PaymentMethod?> GetPaymentMethodAsync()
     {
-        var paymentMethods = await App.Database.GetPaymentMethodsAsync();
+        var paymentMethods = await _app.Database.GetPaymentMethodsAsync();
 
         return SelectFromList(
             paymentMethods,
@@ -115,7 +115,7 @@ internal sealed class CheckoutService(WebshopApplication app)
 
     internal async Task<Models.ShippingMethod?> GetShippingMethodAsync()
     {
-        var shippingMethods = await App.Database.GetShippingMethodsAsync();
+        var shippingMethods = await _app.Database.GetShippingMethodsAsync();
 
         return SelectFromList(
             shippingMethods,
