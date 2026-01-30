@@ -17,18 +17,18 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
         switch ((MenuItems)choice)
         {
             case MenuItems.TotalRevenue:
-                await ShowTotalRevenue();
+                await ShowTotalRevenueAsync();
                 break;
             case MenuItems.RevenuePerCategory:
-                await ShowRevenuePerCategory();
+                await ShowRevenuePerCategoryAsync();
                 break;
             case MenuItems.RevenuePerSupplier:
-                await ShowRevenuePerSupplier();
+                await ShowRevenuePerSupplierAsync();
                 break;
         }
     }
 
-    private async Task ShowTotalRevenue()
+    private async Task ShowTotalRevenueAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Totala intäkter");
@@ -51,7 +51,7 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowRevenuePerCategory()
+    private async Task ShowRevenuePerCategoryAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Intäkter per kategori");
@@ -71,7 +71,7 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowRevenuePerSupplier()
+    private async Task ShowRevenuePerSupplierAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Intäkter per leverantör");

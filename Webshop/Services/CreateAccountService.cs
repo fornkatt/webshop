@@ -3,7 +3,7 @@
 internal sealed class CreateAccountService(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
-    internal async Task<bool> SetUsernameAndPassword(string username, string password)
+    internal bool SetUsernameAndPassword(string username, string password)
     {
         try
         {

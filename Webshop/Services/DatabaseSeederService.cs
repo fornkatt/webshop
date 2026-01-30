@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Webshop.Helpers;
 using Webshop.Models;
 
 namespace Webshop.Services;
@@ -9,7 +10,6 @@ internal sealed class DatabaseSeederService
     {
         using var db = new WebshopDbContext();
 
-        // Seed Country (Sweden)
         if (!db.Countries.Any())
         {
             var sweden = new Country { Name = "Sverige", Code = "SE" };
@@ -17,7 +17,6 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Categories (4 categories - under limit of 5)
         if (!db.Categories.Any())
         {
             var categories = new List<Category>
@@ -31,7 +30,6 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Suppliers
         if (!db.Suppliers.Any())
         {
             var suppliers = new List<Supplier>
@@ -45,7 +43,6 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Shipping Methods
         if (!db.ShippingMethods.Any())
         {
             var shippingMethods = new List<ShippingMethod>
@@ -58,7 +55,6 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Payment Methods
         if (!db.PaymentMethods.Any())
         {
             var paymentMethods = new List<PaymentMethod>
@@ -71,12 +67,10 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Products - Only 3 with IsSelectedItem = true
         if (!db.Products.Any())
         {
             var products = new List<Product>
             {
-                // Datorkomponenter
                 new Product { Name = "AMD Ryzen 9 7950X", ShortDescription = "16-kärnig processor", DetailedDescription = "Högpresterande processor med 16 kärnor och 32 trådar, 5.7 GHz boost", CategoryId = 1, SupplierId = 1, Stock = 15, Price = 6499m, OriginalPrice = 6999m, IsActive = true, IsSelectedItem = true, IsSaleItem = true, IsDiscontinued = false },
                 new Product { Name = "NVIDIA GeForce RTX 4080", ShortDescription = "Kraftfullt grafikkort", DetailedDescription = "16GB GDDR6X, perfekt för gaming och AI", CategoryId = 1, SupplierId = 1, Stock = 8, Price = 13999m, OriginalPrice = 13999m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Corsair Vengeance DDR5 32GB", ShortDescription = "Höghasighets-RAM", DetailedDescription = "32GB (2x16GB) DDR5 6000MHz RGB", CategoryId = 1, SupplierId = 1, Stock = 42, Price = 1899m, OriginalPrice = 1899m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
@@ -84,20 +78,17 @@ internal sealed class DatabaseSeederService
                 new Product { Name = "ASUS ROG Strix Z790-E", ShortDescription = "Gaming moderkort", DetailedDescription = "ATX moderkort för Intel 13th/14th gen, WiFi 6E", CategoryId = 1, SupplierId = 1, Stock = 12, Price = 5499m, OriginalPrice = 5499m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Noctua NH-D15", ShortDescription = "CPU-kylare", DetailedDescription = "Premium luftkylare med dubbla fläktar, mycket tyst", CategoryId = 1, SupplierId = 1, Stock = 28, Price = 1299m, OriginalPrice = 1299m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
 
-                // Mjukvara
                 new Product { Name = "Windows 11 Pro", ShortDescription = "Operativsystem", DetailedDescription = "Windows 11 Professional, fullversion licens", CategoryId = 2, SupplierId = 2, Stock = 100, Price = 2499m, OriginalPrice = 2499m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Microsoft Office 365", ShortDescription = "Kontorspaket", DetailedDescription = "1 års prenumeration, Word, Excel, PowerPoint m.m.", CategoryId = 2, SupplierId = 2, Stock = 150, Price = 899m, OriginalPrice = 1099m, IsActive = true, IsSelectedItem = true, IsSaleItem = true, IsDiscontinued = false },
                 new Product { Name = "Adobe Creative Cloud", ShortDescription = "Kreativ svit", DetailedDescription = "1 års licens, Photoshop, Illustrator, Premiere Pro", CategoryId = 2, SupplierId = 2, Stock = 80, Price = 7499m, OriginalPrice = 7499m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Malwarebytes Premium", ShortDescription = "Antivirusprogram", DetailedDescription = "1 års licens, skydd mot malware och ransomware", CategoryId = 2, SupplierId = 2, Stock = 120, Price = 449m, OriginalPrice = 449m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
 
-                // Datortillbehör
                 new Product { Name = "Logitech MX Master 3S", ShortDescription = "Trådlös mus", DetailedDescription = "Ergonomisk mus med 8K DPI sensor, tysta knappar", CategoryId = 3, SupplierId = 3, Stock = 55, Price = 799m, OriginalPrice = 1199m, IsActive = true, IsSelectedItem = true, IsSaleItem = true, IsDiscontinued = false },
                 new Product { Name = "Keychron K8 Pro", ShortDescription = "Mekaniskt tangentbord", DetailedDescription = "Trådlöst mekaniskt tangentbord, hot-swappable", CategoryId = 3, SupplierId = 3, Stock = 32, Price = 1799m, OriginalPrice = 1799m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "HyperX Cloud III", ShortDescription = "Gaming headset", DetailedDescription = "7.1 surroundljud, bekväma öronkuddar", CategoryId = 3, SupplierId = 3, Stock = 48, Price = 1299m, OriginalPrice = 1299m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Logitech C920 Pro", ShortDescription = "Webbkamera", DetailedDescription = "Full HD 1080p webbkamera med autofokus", CategoryId = 3, SupplierId = 3, Stock = 65, Price = 899m, OriginalPrice = 1199m, IsActive = true, IsSelectedItem = false, IsSaleItem = true, IsDiscontinued = false },
                 new Product { Name = "Blue Yeti", ShortDescription = "USB-mikrofon", DetailedDescription = "Professionell USB-mikrofon för streaming/podcasts", CategoryId = 3, SupplierId = 3, Stock = 22, Price = 1599m, OriginalPrice = 1599m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
 
-                // Bildskärmar
                 new Product { Name = "Dell UltraSharp U2723DE", ShortDescription = "27\" 4K skärm", DetailedDescription = "27\" IPS 4K (3840x2160), USB-C 90W, 99% sRGB", CategoryId = 4, SupplierId = 4, Stock = 18, Price = 6499m, OriginalPrice = 6499m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "ASUS ROG Swift", ShortDescription = "27\" 240Hz gaming", DetailedDescription = "27\" QHD (2560x1440), 240Hz, G-SYNC, IPS", CategoryId = 4, SupplierId = 4, Stock = 12, Price = 7999m, OriginalPrice = 7999m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
                 new Product { Name = "Samsung Odyssey G9", ShortDescription = "49\" ultrawide", DetailedDescription = "49\" QLED 5120x1440, 240Hz, 1000R kurva", CategoryId = 4, SupplierId = 4, Stock = 6, Price = 14999m, OriginalPrice = 14999m, IsActive = true, IsSelectedItem = false, IsSaleItem = false, IsDiscontinued = false },
@@ -107,10 +98,8 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        // Seed Customers
         if (!db.Customers.Any())
         {
-            // Map regions to their actual cities
             var regionCityMap = new Dictionary<string, string[]>
             {
                 { "Stockholms län", new[] { "Stockholm", "Solna", "Nacka", "Sundbyberg" } },
@@ -180,7 +169,6 @@ internal sealed class DatabaseSeederService
             db.Customers.AddRange(customers);
             await db.SaveChangesAsync();
 
-            // Seed orders (1-3 per customer)
             var allProducts = await db.Products.ToListAsync();
             var shippingMethods = await db.ShippingMethods.ToListAsync();
             var paymentMethods = await db.PaymentMethods.ToListAsync();
@@ -238,11 +226,6 @@ internal sealed class DatabaseSeederService
             await db.SaveChangesAsync();
         }
 
-        Console.WriteLine("✓ Database seeded successfully!");
-        Console.WriteLine($"✓ Categories: {db.Categories.Count()}");
-        Console.WriteLine($"✓ Suppliers: {db.Suppliers.Count()}");
-        Console.WriteLine($"✓ Products: {db.Products.Count()}");
-        Console.WriteLine($"✓ Customers: {db.Customers.Count()}");
-        Console.WriteLine($"✓ Orders: {db.Orders.Count()}");
+        MessageHelper.ShowSuccess("Databas seedad!");
     }
 }

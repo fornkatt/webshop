@@ -19,24 +19,24 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         switch ((MenuItems)choice)
         {
             case MenuItems.BestSellingProducts:
-                await ShowBestSellingProducts();
+                await ShowBestSellingProductsAsync();
                 break;
             case MenuItems.PopularCategories:
-                await ShowPopularCategories();
+                await ShowPopularCategoriesAsync();
                 break;
             case MenuItems.PopularProductsPerCategory:
-                await ShowPopularProductsPerCategory();
+                await ShowPopularProductsPerCategoryAsync();
                 break;
             case MenuItems.OrdersPerCity:
-                await ShowOrdersPerCity();
+                await ShowOrdersPerCityAsync();
                 break;
             case MenuItems.ProductsSoldPerSupplier:
-                await ShowProductsSoldPerSupplier();
+                await ShowProductsSoldPerSupplierAsync();
                 break;
         }
     }
 
-    private async Task ShowBestSellingProducts()
+    private async Task ShowBestSellingProductsAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Bäst säljande produkter");
@@ -55,7 +55,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowPopularCategories()
+    private async Task ShowPopularCategoriesAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Populärast kategorier");
@@ -74,7 +74,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowPopularProductsPerCategory()
+    private async Task ShowPopularProductsPerCategoryAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Populärast produkter per kategori");
@@ -103,7 +103,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowOrdersPerCity()
+    private async Task ShowOrdersPerCityAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Flest ordrar per stad");
@@ -122,7 +122,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         MessageHelper.ShowSuccess("Klar!");
     }
 
-    private async Task ShowProductsSoldPerSupplier()
+    private async Task ShowProductsSoldPerSupplierAsync()
     {
         Console.Clear();
         MessageHelper.ShowHeader("Försäljning per leverantör");

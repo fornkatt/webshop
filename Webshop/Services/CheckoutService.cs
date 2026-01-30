@@ -13,12 +13,12 @@ internal sealed class CheckoutService(WebshopApplication app)
                 await _app.Database.AddNewCustomerAsync(_app.CurrentUser);
             }
 
-            var basketItems = _app.Basket.GetItems();
-
             if (_app.CurrentUser.Address!.Id == 0)
             {
                 await _app.Database.AddNewAddressAsync(_app.CurrentUser.Address);
             }
+
+            var basketItems = _app.Basket.GetItems();
 
             var order = new Models.Order
             {
@@ -35,8 +35,13 @@ internal sealed class CheckoutService(WebshopApplication app)
             };
 
             decimal subtotal = 0;
+            var productsToUpdate = new List<Models.Product>();
+
             foreach (var item in basketItems)
             {
+                item.Product.Stock -= item.Quantity;
+                productsToUpdate.Add(item.Product);
+
                 var orderItem = new Models.OrderItem
                 {
                     Order = order,
@@ -56,6 +61,7 @@ internal sealed class CheckoutService(WebshopApplication app)
                 + (paymentMethod.TransactionFee);
 
             await _app.Database.AddNewOrderAsync(order);
+            await _app.Database.UpdateProductStockRangeAsync(productsToUpdate);
 
             _app.Basket.Clear();
 
@@ -63,9 +69,7 @@ internal sealed class CheckoutService(WebshopApplication app)
         }
         catch (Exception e)
         {
-            Helpers.MessageHelper.ShowError($"""
-                Ett fel uppstod vid beställningen: {e.Message}
-                """);
+            Helpers.MessageHelper.ShowError($"Ett fel uppstod vid beställningen: {e.Message}");
             return false;
         }
     }

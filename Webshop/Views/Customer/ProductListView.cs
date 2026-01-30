@@ -14,8 +14,10 @@ internal class ProductListView(string headerText, List<Models.Product> products,
             Console.WriteLine($""" 
                 {i + 1}. {product.Name}
                 {product.ShortDescription}
-                {product.Price} kr
+                {product.OriginalPrice:C} {(product.IsSaleItem ? $"-> {product.Price}" : "")}
                 {(product.Stock > 0 ? "I lager" : "Slut i lager")}
+                {(product.IsSaleItem ? "REA!" : "")}
+                {(product.IsSelectedItem ? "UTVALD!" : "")}
 
                 """);
         }

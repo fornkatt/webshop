@@ -7,6 +7,12 @@ namespace Webshop.Services;
 
 internal sealed class CustomerDatabaseService : DatabaseServiceBase
 {
+    internal async Task UpdateProductStockRangeAsync(List<Product> products)
+    {
+        using var db = new WebshopDbContext();
+        db.Products.UpdateRange(products);
+        await db.SaveChangesAsync();
+    }
     internal async Task AddNewOrderAsync(Order order)
     {
         using var db = new WebshopDbContext();

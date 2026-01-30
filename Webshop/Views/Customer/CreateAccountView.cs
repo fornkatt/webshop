@@ -43,7 +43,7 @@ internal class CreateAccountView(WebshopApplication app)
     {
         var (username, password) = _customerRegistrationHelper.GetNewUsernameAndPassword();
 
-        if (await _createAccountService.SetUsernameAndPassword(username, password))
+        if (_createAccountService.SetUsernameAndPassword(username, password))
         {
             await _app.Database.UpdateCustomerAsync(_app.CurrentUser);
             await _app.MongoLogService.LogActionAsync("Nytt konto", _app.CurrentUser.Id, 
@@ -60,7 +60,7 @@ internal class CreateAccountView(WebshopApplication app)
 
         _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
 
-        if (await _createAccountService.SetUsernameAndPassword(username, password))
+        if (_createAccountService.SetUsernameAndPassword(username, password))
         {
             await _app.Database.AddNewCustomerAsync(_app.CurrentUser);
             await _app.MongoLogService.LogActionAsync("Nytt konto", _app.CurrentUser.Id,

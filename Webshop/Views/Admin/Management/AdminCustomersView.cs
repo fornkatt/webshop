@@ -267,7 +267,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                 case ConsoleKey.Q:
                     return;
                 case ConsoleKey.M:
-                    await SaveCustomerChanges(customer);
+                    await SaveCustomerChangesAsync(customer);
                     return;
                 case ConsoleKey.N:
                     customer.FirstName = InputHelper.GetTextInput("Nytt förnamn");
@@ -294,7 +294,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                     customer.IsActive = !customer.IsActive;
                     break;
                 case ConsoleKey.A:
-                    await EditCustomerAddress(customer.Id);
+                    await EditCustomerAddressAsync(customer.Id);
                     break;
             }
         }
@@ -338,7 +338,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
             """);
     }
 
-    private async Task SaveCustomerChanges(Models.Customer customer)
+    private async Task SaveCustomerChangesAsync(Models.Customer customer)
     {
         Console.Clear();
 
@@ -349,7 +349,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
         MessageHelper.ShowSuccess("Ändringar sparade!");
     }
 
-    private async Task EditCustomerAddress(int customerId)
+    private async Task EditCustomerAddressAsync(int customerId)
     {
         var address = await AdminApp.Database.GetCustomerAddressAsync(customerId);
 
@@ -370,7 +370,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
                 case ConsoleKey.Q:
                     return;
                 case ConsoleKey.M:
-                    await SaveAddressChanges(address);
+                    await SaveAddressChangesAsync(address);
                     return;
                 case ConsoleKey.N:
                     address.City = InputHelper.GetTextInput("Ny stad");
@@ -391,7 +391,7 @@ internal class AdminCustomersView(string headerText, AdminApplication adminApp) 
         }
     }
 
-    private async Task SaveAddressChanges(Models.Address address)
+    private async Task SaveAddressChangesAsync(Models.Address address)
     {
         Console.Clear();
 
