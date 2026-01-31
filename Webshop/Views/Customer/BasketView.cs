@@ -57,13 +57,13 @@ internal sealed class BasketView(string headerText, WebshopApplication app) : Me
 
         int i = 1;
 
-        foreach (var item in pageItems)
+        foreach (var (Product, Quantity) in pageItems)
         {
-            var totalProductPrice = (item.Product.Price ?? 0) * item.Quantity;
+            var totalProductPrice = (Product.Price ?? 0) * Quantity;
             Console.WriteLine($"""
 
-                {i}. {item.Product.Name} - {totalProductPrice:C}
-                    {item.Quantity} st
+                {i}. {Product.Name} - {totalProductPrice:C}
+                    {Quantity} st
 
                 """);
             i++;

@@ -1,10 +1,25 @@
-﻿namespace Webshop.Views.Customer;
+﻿using Webshop.Models;
+
+namespace Webshop.Views.Customer;
 
 internal sealed class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
 {
-    internal enum MenuItems { }
+    private int _currentPage = 0;
+    private const int ItemsPerPage = 8;
 
     private List<Models.Category> _categories = [];
+
+    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
+    {
+        { MenuItems.NextPage, "Nästa sida"  },
+        { MenuItems.PreviousPage, "Föregående sida" }
+    };
+
+    internal enum MenuItems
+    {
+        NextPage = 0,
+        PreviousPage = 9
+    }
 
     protected override async Task OnRenderMenuAsync()
     {
@@ -13,20 +28,47 @@ internal sealed class CategoriesView(string headerText, WebshopApplication app) 
             _categories = await App.Database.GetAllCategoriesAsync();
         }
 
-        for (int i = 0; i < _categories.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {_categories[i].Name}");
-        }
-        Console.WriteLine();
-    }
+        var pageItems = _categories.Skip(_currentPage * ItemsPerPage).Take(ItemsPerPage).ToList();
 
-    private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => [];
+        Console.WriteLine();
+        for (int i = 0; i < pageItems.Count; i++)
+        {
+            var category = pageItems[i];
+            Console.WriteLine($"{i + 1}. {category.Name}");
+        }
+        Console.WriteLine($"""
+
+            Sida {_currentPage + 1}/{(_categories.Count + ItemsPerPage) / ItemsPerPage}
+            """);
+    }
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
     {
-        if (choice >= 1 && choice <= _categories.Count)
+        var totalPages = Math.Max(1, (_categories.Count + ItemsPerPage - 1) / ItemsPerPage);
+
+        if (choice == (int)MenuItems.NextPage)
         {
-            var category = _categories[choice - 1];
+            if (_currentPage < totalPages - 1)
+            {
+                _currentPage++;
+            }
+            return;
+        }
+
+        if (choice == (int)MenuItems.PreviousPage)
+        {
+            if (_currentPage > 0)
+            {
+                _currentPage--;
+            }
+            return;
+        }
+
+        var pageItems = _categories.Skip(_currentPage * ItemsPerPage).Take(ItemsPerPage).ToList();
+
+        if (choice >= 1 && choice <= pageItems.Count)
+        {
+            var category = pageItems[choice - 1];
 
             var products = await App.Database.GetProductsPerCategoryAsync(category.Id);
 
