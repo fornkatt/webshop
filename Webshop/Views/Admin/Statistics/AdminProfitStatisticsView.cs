@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Webshop.Helpers;
 
 namespace Webshop.Views.Admin.Statistics;
@@ -7,9 +8,9 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
     {
-        { MenuItems.TotalRevenue, "Totala int‰kter" },
-        { MenuItems.RevenuePerCategory, "Int‰kter per kategori" },
-        { MenuItems.RevenuePerSupplier, "Int‰kter per leverantˆr" }
+        { MenuItems.TotalRevenue, "Totala int√§kter" },
+        { MenuItems.RevenuePerCategory, "Int√§kter per kategori" },
+        { MenuItems.RevenuePerSupplier, "Int√§kter per leverant√∂r" }
     };
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
@@ -30,33 +31,41 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
 
     private async Task ShowTotalRevenueAsync()
     {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        
         Console.Clear();
-        MessageHelper.ShowHeader("Totala int‰kter");
+        MessageHelper.ShowHeader("Totala int√§kter");
 
         var totalAllTimeRevenue = await AdminApp.Database.GetAllTimeProfitsAsync();
         var totalDailyProfits = await AdminApp.Database.GetDailyProfitsAsync();
         var totalMonthlyProfits = await AdminApp.Database.GetMonthlyProfitsAsync();
         var totalYearlyProfits = await AdminApp.Database.GetYearlyProfitsAsync();
 
+        stopwatch.Stop();
+
         Console.WriteLine($"""
             Totalt sedan start:     {totalAllTimeRevenue:C}
 
             Totalt idag:            {totalDailyProfits:C}
 
-            Totalt denna mÂndad:    {totalMonthlyProfits:C}
+            Totalt denna m√•ndad:    {totalMonthlyProfits:C}
 
-            Total i Âr:             {totalYearlyProfits:C}
+            Total i √•r:             {totalYearlyProfits:C}
             """);
-
-        MessageHelper.ShowSuccess("Klar!");
+        
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowRevenuePerCategoryAsync()
     {
         Console.Clear();
-        MessageHelper.ShowHeader("Int‰kter per kategori");
+        MessageHelper.ShowHeader("Int√§kter per kategori");
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         var profitsPerCategory = await AdminApp.Database.GetProfitsPerCategoryAsync();
+
+        stopwatch.Stop();
 
         foreach (var (CategoryName, TotalProfits) in profitsPerCategory)
         {
@@ -68,15 +77,19 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowRevenuePerSupplierAsync()
     {
         Console.Clear();
-        MessageHelper.ShowHeader("Int‰kter per leverantˆr");
+        MessageHelper.ShowHeader("Int√§kter per leverant√∂r");
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         var profitsPerSupplier = await AdminApp.Database.GetProfitsPerSupplierAsync();
+
+        stopwatch.Stop();
 
         foreach (var (SupplierName, TotalProfits) in profitsPerSupplier)
         {
@@ -88,7 +101,7 @@ internal class AdminProfitStatisticsView(string headerText, AdminApplication adm
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     internal enum MenuItems

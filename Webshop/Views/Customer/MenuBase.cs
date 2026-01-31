@@ -1,4 +1,4 @@
-﻿using Webshop.Views.Admin.Management;
+﻿using Webshop.Views.Admin;
 using Webshop.Views.Shared;
 
 namespace Webshop.Views.Customer;
@@ -157,7 +157,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
                 break;
             case PersistentMenuItems.Basket:
                 if (this is BasketView || this is AdminView) return;
-                await new BasketView("Varukorgen", App).ActivateAsync(); ;
+                await new BasketView("Varukorgen", App).ActivateAsync();
                 break;
             case PersistentMenuItems.Checkout:
                 if (this is not BasketView || App.Basket.GetTotalItemCount() <= 0) return;

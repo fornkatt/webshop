@@ -1,6 +1,9 @@
-﻿namespace Webshop.Views.Admin.Management;
+﻿using Webshop.Views.Admin.Management;
+using Webshop.Views.Admin.Statistics;
 
-internal class AdminView(string headerText, AdminApplication adminApp) : 
+namespace Webshop.Views.Admin;
+
+internal class AdminView(string headerText, AdminApplication adminApp) :
     AdminMenuBase<AdminView.MenuItems>(headerText, adminApp)
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()
@@ -9,7 +12,8 @@ internal class AdminView(string headerText, AdminApplication adminApp) :
         { MenuItems.HandleCategories, "Hantera kategorier" },
         { MenuItems.HandleCustomers, "Hantera kunder" },
         { MenuItems.HandleSuppliers, "Hantera leverantörer" },
-        { MenuItems.Statistics, "Se statistik" }
+        { MenuItems.Statistics, "Se statistik" },
+        { MenuItems.Logs, "Se loggar (10 senaste)" }
     };
 
     internal enum MenuItems
@@ -18,7 +22,8 @@ internal class AdminView(string headerText, AdminApplication adminApp) :
         HandleCategories,
         HandleSuppliers,
         HandleCustomers,
-        Statistics
+        Statistics,
+        Logs
     }
 
     private protected override async Task ExecuteUserMenuChoiceAsync(int choice)
@@ -38,7 +43,10 @@ internal class AdminView(string headerText, AdminApplication adminApp) :
                 await new AdminCustomersView("Hantera kunder", AdminApp).ActivateAsync();
                 break;
             case MenuItems.Statistics:
-                await new Statistics.AdminStatisticsView("Se statistik", AdminApp).ActivateAsync();
+                await new AdminStatisticsView("Se statistik", AdminApp).ActivateAsync();
+                break;
+            case MenuItems.Logs:
+                await new AdminLogsView("Loggar", AdminApp).DisplayLogs();
                 break;
         }
     }

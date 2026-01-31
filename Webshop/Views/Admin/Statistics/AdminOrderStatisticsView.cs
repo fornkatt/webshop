@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Webshop.Helpers;
 
 namespace Webshop.Views.Admin.Statistics;
@@ -41,7 +42,11 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         Console.Clear();
         MessageHelper.ShowHeader("Bäst säljande produkter");
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
         var bestSellingProducts = await AdminApp.Database.GetBestSellingProductsAsync();
+
+        stopwatch.Stop();
 
         foreach (var (ProductName, TotalQuantitySold) in bestSellingProducts)
         {
@@ -52,7 +57,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowPopularCategoriesAsync()
@@ -60,7 +65,11 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         Console.Clear();
         MessageHelper.ShowHeader("Populärast kategorier");
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
         var popularCategories = await AdminApp.Database.GetPopularCategoriesAsync();
+
+        stopwatch.Stop();
 
         foreach (var (CategoryName, QuantityOfProductsSold) in popularCategories)
         {
@@ -71,7 +80,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowPopularProductsPerCategoryAsync()
@@ -79,7 +88,11 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         Console.Clear();
         MessageHelper.ShowHeader("Populärast produkter per kategori");
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
         var popularProductsPerCategory = await AdminApp.Database.GetPopularProductsPerCategoryAsync();
+
+        stopwatch.Stop();
 
         string currentCategory = "";
 
@@ -100,7 +113,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowOrdersPerCityAsync()
@@ -108,7 +121,11 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         Console.Clear();
         MessageHelper.ShowHeader("Flest ordrar per stad");
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
         var ordersPerCity = await AdminApp.Database.GetOrdersPerCityAsync();
+
+        stopwatch.Stop();
 
         foreach (var (CityName, OrderCount) in ordersPerCity)
         {
@@ -119,7 +136,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task ShowProductsSoldPerSupplierAsync()
@@ -127,7 +144,11 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
         Console.Clear();
         MessageHelper.ShowHeader("Försäljning per leverantör");
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
         var productsSoldPerSupplier = await AdminApp.Database.GetProductsSoldPerSupplierAsync();
+
+        stopwatch.Stop();
 
         foreach (var (SupplierName, ProductsSold) in productsSoldPerSupplier)
         {
@@ -138,7 +159,7 @@ internal class AdminOrderStatisticsView(string headerText, AdminApplication admi
                 """);
         }
 
-        MessageHelper.ShowSuccess("Klar!");
+        MessageHelper.ShowSuccess($"Klar! Total tid: {stopwatch.ElapsedMilliseconds} ms");
     }
 
     internal enum MenuItems

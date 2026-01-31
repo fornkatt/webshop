@@ -1,5 +1,4 @@
-﻿using Webshop.Views.Admin.Management;
-using Webshop.Views.Shared;
+﻿using Webshop.Views.Shared;
 
 namespace Webshop.Views.Admin;
 
@@ -34,6 +33,11 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
             RenderPersistentMenuItems();
             await RenderMenuAsync();
             await ValidateUserInputAsync();
+
+            if (AdminApp.ShouldExitToWebshop())
+            {
+                ExitMenu();
+            }
         }
     }
 
@@ -50,7 +54,7 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
             {
                 continue;
             }
-            Console.Write($"[{(char)item}] {PersistentMenuItemsLocalizedNames[item], -20}");
+            Console.Write($"[{(char)item}] {PersistentMenuItemsLocalizedNames[item], -30}");
         }
         Console.WriteLine();
     }
@@ -88,7 +92,6 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
     {
         return item switch
         {
-            PersistentMenuItems.Exit when this is not AdminView => true,
             PersistentMenuItems.Back when this is AdminView => true,
             PersistentMenuItems.Home when this is AdminView => true,
             _ => false
@@ -119,8 +122,7 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
         switch ((PersistentMenuItems)choice)
         {
             case PersistentMenuItems.Exit:
-                if (this is not AdminView) return;
-                ExitMenu();
+                AdminApp.ExitToWebshop();
                 break;
             case PersistentMenuItems.Back:
                 if (this is AdminView) return;

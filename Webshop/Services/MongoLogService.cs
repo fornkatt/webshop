@@ -54,7 +54,7 @@ internal sealed class MongoLogService
         }
     }
 
-    internal async Task<List<ActionLog>> GetRecentLogsAsync(int limit = 100)
+    internal async Task<List<ActionLog>> GetRecentLogsAsync(int limit = 10)
     {
         if (_logsCollection == null) return new List<ActionLog>();
 

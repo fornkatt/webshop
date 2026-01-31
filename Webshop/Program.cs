@@ -9,8 +9,6 @@ internal class Program
 
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("sv-SE");
 
-        Console.CursorVisible = false;
-
         var webshop = new WebshopApplication();
 
         await webshop.GoToMainMenuAsync();

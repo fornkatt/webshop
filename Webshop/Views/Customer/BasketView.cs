@@ -28,28 +28,24 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
             """);
 
             var key = Console.ReadKey(true).Key;
-            if (key == ConsoleKey.Y)
+
+            switch (key)
             {
-                selectedItem.Quantity++;
-            }
-            if (key == ConsoleKey.Z)
-            {
-                if (selectedItem.Quantity <= 1) continue;
-                selectedItem.Quantity--;
-            }
-            if (key == ConsoleKey.X)
-            {
-                await App.Basket.RemoveFromBasket(selectedItem.Product, App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
-                return;
-            }
-            if (key == ConsoleKey.S)
-            {
-                App.Basket.ReplaceBasketItem((selectedItem.Product, selectedItem.Quantity));
-                return;
-            }
-            if (key == ConsoleKey.Q)
-            {
-                return;
+                case ConsoleKey.Y:
+                    selectedItem.Quantity++;
+                    break;
+                case ConsoleKey.Z:
+                    if (selectedItem.Quantity <= 1) continue;
+                    selectedItem.Quantity--;
+                    break;
+                case ConsoleKey.X:
+                    await App.Basket.RemoveFromBasket(selectedItem.Product, App.CurrentUser.Id, App.CurrentUser.FirstName, App.CurrentUser.Email);
+                    return;
+                case ConsoleKey.S:
+                    App.Basket.ReplaceBasketItem((selectedItem.Product, selectedItem.Quantity));
+                    return;
+                case ConsoleKey.Q:
+                    return;
             }
         }
     }
@@ -66,7 +62,7 @@ internal class BasketView(string headerText, WebshopApplication app) : MenuBase<
             var totalProductPrice = (item.Product.Price ?? 0) * item.Quantity;
             Console.WriteLine($"""
 
-                {i}. {item.Product.Name} - {totalProductPrice} kr
+                {i}. {item.Product.Name} - {totalProductPrice:C}
                     {item.Quantity} st
 
                 """);
