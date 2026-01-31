@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Helpers;
 
-internal class InputHelper
+internal static class InputHelper
 {
     internal static string GetTextInput(string prompt)
     {

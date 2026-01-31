@@ -1,8 +1,10 @@
 ﻿namespace Webshop.Helpers;
 
-internal class CustomerRegistrationHelper()
+internal static class CustomerRegistrationHelper
 {
-    internal (string firstName, string lastName, int age, string region, string city, int postalCode, string street, string houseNumber, string phone, string email) CollectAddressInput()
+    internal static (string firstName, string lastName, int age,
+        string region, string city, int postalCode,
+        string street, string houseNumber, string phone, string email) CollectAddressInput()
     {
         Console.Clear();
 
@@ -21,11 +23,11 @@ internal class CustomerRegistrationHelper()
 
         return (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email);
     }
-    internal (string username, string password) GetNewUsernameAndPassword()
+    internal static (string username, string password) GetNewUsernameAndPassword()
     {
         var username = InputHelper.GetTextInput("Ange användarnamn");
 
-        var password = "";
+        string password;
 
         while (true)
         {

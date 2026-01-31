@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Helpers;
 
-internal class MessageHelper
+internal static class MessageHelper
 {
     internal static void ShowSuccess(string message)
     {
@@ -19,7 +19,7 @@ internal class MessageHelper
 
             {message}
 
-            Tryck på valfi tangent för att fortsätta.
+            Tryck på valfri tangent för att fortsätta.
             """);
         Console.ReadKey(true);
     }

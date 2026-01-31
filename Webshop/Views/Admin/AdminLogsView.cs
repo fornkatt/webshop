@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Admin;
 
-internal class AdminLogsView(string headerText, AdminApplication app)
+internal sealed class AdminLogsView(string headerText, AdminApplication app)
 {
     internal async Task DisplayLogs()
     {

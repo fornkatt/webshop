@@ -3,7 +3,7 @@ using Webshop.Views.Admin.Statistics;
 
 namespace Webshop.Views.Admin;
 
-internal class AdminView(string headerText, AdminApplication adminApp) :
+internal sealed class AdminView(string headerText, AdminApplication adminApp) :
     AdminMenuBase<AdminView.MenuItems>(headerText, adminApp)
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()

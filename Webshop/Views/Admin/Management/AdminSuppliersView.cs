@@ -2,7 +2,7 @@
 
 namespace Webshop.Views.Admin.Management;
 
-internal class AdminSuppliersView(string headerText, AdminApplication adminApp) : 
+internal sealed class AdminSuppliersView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminSuppliersView.MenuItems>(headerText, adminApp)
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()

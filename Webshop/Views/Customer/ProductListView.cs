@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Customer;
 
-internal class ProductListView(string headerText, List<Models.Product> products, WebshopApplication app) : MenuBase<ProductListView.MenuItems>(headerText, app)
+internal sealed class ProductListView(string headerText, List<Models.Product> products, WebshopApplication app) : MenuBase<ProductListView.MenuItems>(headerText, app)
 {
     private readonly List<Models.Product> _products = products;
     internal enum MenuItems { }

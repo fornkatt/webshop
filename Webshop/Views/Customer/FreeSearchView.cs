@@ -4,7 +4,7 @@
 // It also does not need to be coupled to MenuBase since we probably do not want to go to a separate view from here
 // we can simply exit to the previous view and go from there.
 // It is a view all the same because it displays information and handles I/O.
-internal class FreeSearchView(WebshopApplication app)
+internal sealed class FreeSearchView(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
 

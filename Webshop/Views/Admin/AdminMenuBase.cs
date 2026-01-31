@@ -6,9 +6,9 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
     where TMenuItems : Enum
 {
     private protected AdminApplication AdminApp { get; } = adminApp;
-    private protected string HeaderText { get; set; } = headerText;
+    public string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
-    private bool _shouldExit = false;
+    public bool _shouldExit = false;
 
     private enum PersistentMenuItems
     {
@@ -41,7 +41,7 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
         }
     }
 
-    private protected void ExitMenu()
+    private void ExitMenu()
     {
         _shouldExit = true;
     }
@@ -59,7 +59,7 @@ internal abstract class AdminMenuBase<TMenuItems>(string headerText, AdminApplic
         Console.WriteLine();
     }
 
-    private protected virtual async Task RenderMenuAsync()
+    public virtual async Task RenderMenuAsync()
     {
         try
         {

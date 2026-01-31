@@ -4,7 +4,7 @@
 // Does not extend MenuBase because it simply asks user if they want to log out or not.
 // Simply pressing any other key than "Y" will put them back in the previous view.
 // I opted for having it in Views because it handles I/O and displays information.
-internal class LogoutView(WebshopApplication app)
+internal sealed class LogoutView(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
 

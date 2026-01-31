@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Customer;
 
-internal class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
+internal sealed class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
 {
     internal enum MenuItems { }
 

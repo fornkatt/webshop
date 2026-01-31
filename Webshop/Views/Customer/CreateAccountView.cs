@@ -5,11 +5,10 @@ namespace Webshop.Views.Customer;
 // I feel this is it's own entity, separated from MenuBase so I didn't extend it for this view.
 // It displays some information and calls on data collection methods to collect user information to make accounts
 // which are blocking and don't need a menu to navigate.
-internal class CreateAccountView(WebshopApplication app)
+internal sealed class CreateAccountView(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
     private readonly Services.CreateAccountService _createAccountService = new(app);
-    private readonly CustomerRegistrationHelper _customerRegistrationHelper = new();
 
     internal async Task ActivateAsync()
     {
@@ -41,7 +40,7 @@ internal class CreateAccountView(WebshopApplication app)
 
     private async Task ConvertGuestAccountAsync()
     {
-        var (username, password) = _customerRegistrationHelper.GetNewUsernameAndPassword();
+        var (username, password) = CustomerRegistrationHelper.GetNewUsernameAndPassword();
 
         if (_createAccountService.SetUsernameAndPassword(username, password))
         {
@@ -55,8 +54,8 @@ internal class CreateAccountView(WebshopApplication app)
     }
     private async Task CreateNewAccountAsync()
     {
-        var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
-        var (username, password) = _customerRegistrationHelper.GetNewUsernameAndPassword();
+        var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = CustomerRegistrationHelper.CollectAddressInput();
+        var (username, password) = CustomerRegistrationHelper.GetNewUsernameAndPassword();
 
         _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
 

@@ -3,7 +3,7 @@
 // Does not extend MenuBase because it makes blocking I/O calls to handle user login.
 // Displaying PersistentMenuItems and handling menu navigation is pointless here.
 // I still put it in Views because it displays information and handles I/O and has minimal business logic.
-internal class LoginView(WebshopApplication app)
+internal sealed class LoginView(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
 

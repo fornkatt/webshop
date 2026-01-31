@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Customer;
 
-internal class BasketView(string headerText, WebshopApplication app) : MenuBase<BasketView.MenuItems>(headerText, app)
+internal sealed class BasketView(string headerText, WebshopApplication app) : MenuBase<BasketView.MenuItems>(headerText, app)
 {
     private int _currentPage = 0;
     private const int ItemsPerPage = 8;

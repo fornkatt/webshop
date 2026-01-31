@@ -2,7 +2,7 @@
 
 namespace Webshop;
 
-internal class AdminApplication
+internal sealed class AdminApplication
 {
     internal Services.MongoLogService MongoLogService { get; }
     internal Services.AdminDatabaseService Database { get; }

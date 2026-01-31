@@ -6,7 +6,7 @@ namespace Webshop.Views.Customer;
 internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplication app) : IMenu where TMenuItems : Enum
 {
     private protected WebshopApplication App { get; } = app;
-    private protected string HeaderText { get; set; } = headerText;
+    public string HeaderText { get; set; } = headerText;
     private protected abstract Dictionary<TMenuItems, string> MenuItemLocalizedNames { get; }
     private bool _shouldExit = false;
     private enum PersistentMenuItems
@@ -76,7 +76,7 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
             Helpers.MessageHelper.ShowError($"Något gick fel: {e.Message}");
         }
     }
-    private protected virtual async Task RenderMenuAsync()
+    public virtual async Task RenderMenuAsync()
     {
         try
         {

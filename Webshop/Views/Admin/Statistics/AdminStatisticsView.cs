@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Admin.Statistics;
 
-internal class AdminStatisticsView(string headerText, AdminApplication adminApp) : 
+internal sealed class AdminStatisticsView(string headerText, AdminApplication adminApp) : 
     AdminMenuBase<AdminStatisticsView.MenuItems>(headerText, adminApp)
 {
     private protected override Dictionary<MenuItems, string> MenuItemLocalizedNames => new()

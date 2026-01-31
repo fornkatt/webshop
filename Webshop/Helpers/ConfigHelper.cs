@@ -2,7 +2,7 @@
 
 namespace Webshop.Helpers;
 
-internal class ConfigHelper
+internal static class ConfigHelper
 {
     private static AppSettings? _settings;
 

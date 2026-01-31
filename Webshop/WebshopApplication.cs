@@ -2,14 +2,14 @@
 
 namespace Webshop;
 
-internal class WebshopApplication
+internal sealed class WebshopApplication
 {
     internal Services.MongoLogService MongoLogService { get; }
     internal Services.BasketService Basket { get; }
     internal Models.Customer CurrentUser { get; set; }
     internal Services.CustomerDatabaseService Database { get; }
     private MainMenuView MainMenu { get; }
-    public bool IsLoggedIn => !CurrentUser.IsGuest;
+    internal bool IsLoggedIn => !CurrentUser.IsGuest;
 
     internal WebshopApplication()
     {

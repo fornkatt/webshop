@@ -1,6 +1,6 @@
 ﻿namespace Webshop.Views.Customer;
 
-internal class ProductView(string headerText, Models.Product product, WebshopApplication app) : MenuBase<ProductView.MenuItems>(headerText, app)
+internal sealed class ProductView(string headerText, Models.Product product, WebshopApplication app) : MenuBase<ProductView.MenuItems>(headerText, app)
 {
     internal enum MenuItems
     {
@@ -13,7 +13,7 @@ internal class ProductView(string headerText, Models.Product product, WebshopApp
         { MenuItems.AddItem, "Lägg till i varukorgen." }
     };
 
-    private protected override async Task RenderMenuAsync()
+    public override async Task RenderMenuAsync()
     {
         try
         {

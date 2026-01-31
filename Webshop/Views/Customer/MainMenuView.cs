@@ -2,7 +2,7 @@
 
 namespace Webshop.Views.Customer;
 
-internal class MainMenuView(string headerText, WebshopApplication app) : MenuBase<MainMenuView.MenuItems>(headerText, app)
+internal sealed class MainMenuView(string headerText, WebshopApplication app) : MenuBase<MainMenuView.MenuItems>(headerText, app)
 {
     private List<Models.Product> _selectedProducts = [];
 

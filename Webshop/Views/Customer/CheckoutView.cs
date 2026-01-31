@@ -5,12 +5,11 @@ namespace Webshop.Views.Customer;
 // I opted for not extending MenuBase in this view, the reasoning behind this is that while it could technically do that
 // this view is heavy on data collection, display and confirmation dialogs which block user input anyway,
 // so the user can't navigate the menu items.
-internal class CheckoutView(WebshopApplication app)
+internal sealed class CheckoutView(WebshopApplication app)
 {
     private readonly WebshopApplication _app = app;
     private readonly Services.CheckoutService _checkoutService = new(app);
     private readonly Services.CreateAccountService _createAccountService = new(app);
-    private readonly CustomerRegistrationHelper _customerRegistrationHelper = new();
 
     internal async Task ActivateAsync()
     {
@@ -24,14 +23,14 @@ internal class CheckoutView(WebshopApplication app)
 
                 if (!InputHelper.GetConfirmation("Stämmer detta?"))
                 {
-                    var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+                    var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = CustomerRegistrationHelper.CollectAddressInput();
 
                     _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
                 }
             }
             else
             {
-                var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = _customerRegistrationHelper.CollectAddressInput();
+                var (firstName, lastName, age, region, city, postalCode, street, houseNumber, phone, email) = CustomerRegistrationHelper.CollectAddressInput();
 
                 _createAccountService.SetCustomerAddress(age, region, city, postalCode, street, houseNumber, firstName, lastName, phone, email);
             }
