@@ -1,6 +1,4 @@
-﻿using Webshop.Helpers;
-
-namespace Webshop.Views.Customer;
+﻿namespace Webshop.Views.Customer;
 
 internal sealed class MainMenuView(string headerText, WebshopApplication app) : MenuBase<MainMenuView.MenuItems>(headerText, app)
 {
@@ -53,7 +51,7 @@ internal sealed class MainMenuView(string headerText, WebshopApplication app) : 
 
 
             """);
-        MessageHelper.ShowHeader("Utvalda produkter");
+        Helpers.MessageHelper.ShowHeader("Utvalda produkter");
 
         DisplaySelectedProducts();
 

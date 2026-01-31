@@ -1,6 +1,4 @@
-﻿using Webshop.Models;
-
-namespace Webshop.Views.Customer;
+﻿namespace Webshop.Views.Customer;
 
 internal sealed class CategoriesView(string headerText, WebshopApplication app) : MenuBase<CategoriesView.MenuItems>(headerText, app)
 {

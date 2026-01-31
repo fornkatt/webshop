@@ -1,18 +1,16 @@
-﻿using Webshop.Models;
-
-namespace Webshop.Services;
+﻿namespace Webshop.Services;
 
 internal sealed class BasketService(MongoLogService? logService = null)
 {
-    private readonly Dictionary<int, (Product Product, int Quantity)> _basketItems = [];
+    private readonly Dictionary<int, (Models.Product Product, int Quantity)> _basketItems = [];
     private readonly MongoLogService? _logService = logService;
 
-    internal void ReplaceBasketItem((Product Product, int Quantity) item)
+    internal void ReplaceBasketItem((Models.Product Product, int Quantity) item)
     {
         _basketItems[item.Product.Id] = (item.Product, item.Quantity);
     }
 
-    internal async Task AddToBasket(Product product, int? userId = null, string? name = null, string? email = null)
+    internal async Task AddToBasket(Models.Product product, int? userId = null, string? name = null, string? email = null)
     {
         if (_basketItems.ContainsKey(product.Id))
         {
@@ -29,7 +27,7 @@ internal sealed class BasketService(MongoLogService? logService = null)
         }
     }
 
-    internal async Task RemoveFromBasket(Product product, int? userId = null, string? name = null, string? email = null)
+    internal async Task RemoveFromBasket(Models.Product product, int? userId = null, string? name = null, string? email = null)
     {
         if (_basketItems.ContainsKey(product.Id))
         {
@@ -66,7 +64,7 @@ internal sealed class BasketService(MongoLogService? logService = null)
         }
     }
 
-    internal List<(Product Product, int Quantity)> GetItems()
+    internal List<(Models.Product Product, int Quantity)> GetItems()
     {
         return _basketItems.Values.ToList();
     }

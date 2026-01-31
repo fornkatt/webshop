@@ -32,10 +32,10 @@ internal sealed class ProductListView(string headerText, List<Models.Product> pr
                 {(product.Stock > 0 ? "I lager" : "Slut i lager")}
                 {(product.IsSaleItem ? "REA!" : "")}
                 {(product.IsSelectedItem ? "UTVALD!" : "")}
-
                 """);
         }
         Console.WriteLine($"""
+
             Sida {_currentPage + 1}/{(_products.Count + ItemsPerPage) / ItemsPerPage}
             """);
     }

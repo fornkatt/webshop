@@ -1,5 +1,4 @@
-﻿using Webshop.Views.Admin;
-using Webshop.Views.Shared;
+﻿using Webshop.Views.Shared;
 
 namespace Webshop.Views.Customer;
 
@@ -104,14 +103,12 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
     {
         return item switch
         {
-            PersistentMenuItems.Basket when this is BasketView or AdminView => true,
+            PersistentMenuItems.Basket when this is BasketView => true,
             PersistentMenuItems.Back when this is MainMenuView => true,
             PersistentMenuItems.Home when this is MainMenuView => true,
             PersistentMenuItems.CreateAccount when !App.CurrentUser.IsGuest => true,
             PersistentMenuItems.Login when App.IsLoggedIn => true,
             PersistentMenuItems.Logout when !App.IsLoggedIn => true,
-            PersistentMenuItems.Login when this is AdminView => true,
-            PersistentMenuItems.Logout when this is AdminView => true,
             PersistentMenuItems.ClearBasket when this is not BasketView => true,
             PersistentMenuItems.Checkout when this is not BasketView => true,
             _ => false
@@ -148,15 +145,15 @@ internal abstract class MenuBase<TMenuItems>(string headerText, WebshopApplicati
                 await new FreeSearchView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Login:
-                if (App.IsLoggedIn || this is AdminView) return;
+                if (App.IsLoggedIn) return;
                 await new LoginView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Logout:
-                if (App.IsLoggedIn == false || this is AdminView) return;
+                if (App.IsLoggedIn == false) return;
                 await new LogoutView(App).ActivateAsync();
                 break;
             case PersistentMenuItems.Basket:
-                if (this is BasketView || this is AdminView) return;
+                if (this is BasketView) return;
                 await new BasketView("Varukorgen", App).ActivateAsync();
                 break;
             case PersistentMenuItems.Checkout:
